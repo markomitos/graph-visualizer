@@ -1,5 +1,5 @@
-from graph_explorer.app_platform.models.edge import Edge
-from graph_explorer.app_platform.models.vertex import Vertex
+from app_platform import Edge
+from app_platform import Vertex
 
 
 class Graph:
