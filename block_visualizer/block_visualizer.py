@@ -4,4 +4,5 @@ from api.visualizer_api import VisualizerBase
 
 class BlockVisualiser(VisualizerBase):
     def render(self, data: Graph) -> str:
-        pass
+        print("block_visualizer")
+        return "block_visualizer"

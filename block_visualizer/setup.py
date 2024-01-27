@@ -1,15 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='block_visualiser',
+    name='block_visualizer',
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        # Add any dependencies required by your visualizer plugin
+        'visualizer-api==0.1',
     ],
     entry_points={
         'visualizers': [
-            'block_visualiser = block_visualiser.block_visualiser:BlockVisualiser',
+            'block_visualizer = block_visualizer.block_visualizer:BlockVisualiser',
         ],
     }
 )

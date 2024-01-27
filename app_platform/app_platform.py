@@ -1,16 +1,18 @@
 import importlib.metadata
-
+import pkg_resources
 def main():
-    print("Loading available plugins...")
-    print("Data Source Plugins:")
-    data_source_plugins = importlib.metadata.entry_points().get('data_sources', [])
-    for plugin in data_source_plugins:
-        print(f"- {plugin.name}")
-
-    print("\nVisualizer Plugins:")
-    visualizer_plugins = importlib.metadata.entry_points().get('visualizers', [])
-    for plugin in visualizer_plugins:
-        print(f"- {plugin.name}")
+    """
+        Dinamicko prepoznavanje plagina na osnovu pripadajuce grupe.
+        """
+    plugins = []
+    for ep in pkg_resources.iter_entry_points(group="visualizers"):
+        # Ucitavanje plagina.
+        p = ep.load()
+        print(f"{ep.name} {p}")
+        # instanciranje odgovarajuce klase
+        plugin = p()
+        plugins.append(plugin)
+    return plugins
 
 if __name__ == "__main__":
     main()

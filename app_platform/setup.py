@@ -5,7 +5,7 @@ setup(
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        # Add any dependencies required by your platform
+        'visualizer-api==0.1',
     ],
     entry_points={
         'console_scripts': [
