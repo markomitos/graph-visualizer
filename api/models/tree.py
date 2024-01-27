@@ -1,4 +1,4 @@
-from graph_explorer.app_platform.models.node import Node
+from platform.models.node import Node
 
 
 class Tree:
