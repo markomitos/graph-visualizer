@@ -1,12 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='airplane_data_source',
+    name='airport_data_source',
     version='0.1',
     packages=find_packages(),
+    install_requires=[
+        'visualizer-api==0.1',
+    ],
     entry_points={
         'data_sources': [
-            'airplane_data_source = airplane_data_source.airplane_data_source:AirplaneDataSource',
+            'airport_data_source = airport_data_source.airport_data_source:AirportDataSource',
         ],
     }
 )

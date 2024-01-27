@@ -1,29 +1,49 @@
 import importlib.metadata
 import pkg_resources
 
+from api.data_source_api import DataSourceBase
 from api.visualizer_api import (
     VisualizerBase
 )
 
 
 def main():
-    """
-        Dinamicko prepoznavanje plagina na osnovu pripadajuce grupe.
-        """
     plugins = []
     for ep in pkg_resources.iter_entry_points(group="visualizers"):
-        # Ucitavanje plagina.
         p = ep.load()
         print(f"{ep.name} {p}")
-        # instanciranje odgovarajuce klase
         plugin = p()
         plugins.append(plugin)
         if issubclass(p, VisualizerBase):
-            # Instanciranje odgovarajuce klase
             plugin = p()
-            # Poziv metode render() ako postoji
             if hasattr(plugin, 'render'):
                 plugin.render(None)
+                plugins.append(plugin)
+            else:
+                print(f"Plugin {ep.name} nema metodu render().")
+
+    xml_data = """
+                    <trains>
+                        <train id="1">
+                            <name>Express</name>
+                            <route>New York to Chicago</route>
+                        </train>
+                        <train id="2">
+                            <name>Local</name>
+                            <route>Chicago to San Francisco</route>
+                        </train>
+                    </trains>
+                    """
+
+    for ep in pkg_resources.iter_entry_points(group="data_sources"):
+        p = ep.load()
+        print(f"{ep.name} {p}")
+        plugin = p(xml_data)
+        plugins.append(plugin)
+        if issubclass(p, DataSourceBase):
+            plugin = p(xml_data)
+            if hasattr(plugin, 'fetch_data'):
+                plugin.fetch_data()
                 plugins.append(plugin)
             else:
                 print(f"Plugin {ep.name} nema metodu render().")
