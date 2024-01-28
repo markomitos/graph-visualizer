@@ -1,12 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from api.models.graph import Graph
+from models.graph import Graph
 
 
 class VisualizerBase(ABC):
     """
     Abstract base class for visualizer plugins.
     """
+
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
     @abstractmethod
     def render(self, data: Graph) -> str:
