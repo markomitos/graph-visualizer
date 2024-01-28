@@ -1,5 +1,5 @@
-from api.models.edge import Edge
-from api.models.vertex import Vertex
+from models.edge import Edge
+from models.vertex import Vertex
 
 
 class Graph:

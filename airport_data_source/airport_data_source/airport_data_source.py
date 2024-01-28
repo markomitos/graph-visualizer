@@ -1,5 +1,5 @@
-from api.data_source_api import DataSourceBase
-from api.models.graph import Graph
+from visualizer_api.data_source_api import DataSourceBase
+from models.graph import Graph
 
 
 class AirportDataSource(DataSourceBase):

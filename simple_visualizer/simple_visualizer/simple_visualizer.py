@@ -1,5 +1,5 @@
-from api.models.graph import Graph
-from api.visualizer_api import VisualizerBase
+from models.graph import Graph
+from visualizer_api.visualizer_api import VisualizerBase
 
 
 class SimpleVisualiser(VisualizerBase):

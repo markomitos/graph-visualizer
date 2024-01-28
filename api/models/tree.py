@@ -1,4 +1,4 @@
-from platform.models.node import Node
+from models.node import Node
 
 
 class Tree:

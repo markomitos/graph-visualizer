@@ -1,11 +1,9 @@
-import importlib.metadata
 import pkg_resources
 from typing import Union
 
-from api.data_source_api import DataSourceBase
-from api.visualizer_api import (
-    VisualizerBase
-)
+from visualizer_api.data_source_api import DataSourceBase
+from visualizer_api.visualizer_api import VisualizerBase
+
 
 
 def main():

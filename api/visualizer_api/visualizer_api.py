@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from api.models.graph import Graph
+from models.graph import Graph
 
 
 class VisualizerBase(ABC):
