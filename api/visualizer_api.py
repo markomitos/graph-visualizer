@@ -9,6 +9,10 @@ class VisualizerBase(ABC):
     """
 
     @abstractmethod
+    def name(self) -> str:
+        pass
+
+    @abstractmethod
     def render(self, data: Graph) -> str:
         """
         Method to render visualization of data.
