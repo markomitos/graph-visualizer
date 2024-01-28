@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <script type="text/javascript" src="https://d3js.org/d3.v3.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <title>{{title}}</title>
+    {% block head_sadrzaj %}{% endblock %}
+</head>
+<body>
+<div class="page">
+      <div class="header">
+
+          <div class="left-header">
+              <h1>Graph visualizer</h1>
+          </div>
+
+          <div class="right-header">
+
+            <div class="top-right">
+                <div class="plugins">
+                    <label for="data-source-plugin">Data source plugin</label><select class="plugin-select" id="data-source-plugin"></select>
+                    <label for="visualizer-plugin">Visualizer plugin</label><select class="plugin-select" id="visualizer-plugin"></select>
+                </div>
+
+                <div class="search">
+                    <label for="search">Search: </label><input id="search">
+                </div>
+            </div>
+
+              <div class="center-right">
+                  <div class="filter">
+                      <label for="filter">Filter: </label><input id="filter">
+
+                      <label for="select-operation">Operation: </label>
+                        <select id="select-operation">
+                          <option value="+">+</option>
+                          <option value="-">-</option>
+                          <option value="*">*</option>
+                          <option value="/">/</option>
+                        </select>
+
+                      <label for="value">Value: </label><input id="value">
+                  </div>
+                  <button>Submit</button>
+              </div>
+
+              <div class="bottom-right">
+                  <div class="applied-queries">
+                      <p>Applied queries:</p>
+                      <p>filter1</p>
+                  </div>
+              </div>
+
+          </div>
+      </div>
+      <div class="left">
+          <div id="tree-view">
+                {% block treeview %}{% endblock %}
+          </div>
+          <div id="bird-view">
+              {% block birdview %}{% endblock %}
+          </div>
+          <p>left</p>
+      </div>
+      <div class="center">
+          <p>center</p>
+      </div>
+</div>
+</body>
+</html>
