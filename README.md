@@ -16,3 +16,6 @@ A modular graph visualizer written in python using Django
    1. API
    2. Platform
    3. Rest of the plugins
+3. Run these shell scripts
+   - `./clean.sh`
+   - `./run.sh`
