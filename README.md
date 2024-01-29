@@ -19,3 +19,12 @@ A modular graph visualizer written in python using Django
 3. Run these shell scripts
    - `./clean.sh`
    - `./run.sh`
+
+
+### Data source plugins
+1. XML Data source parser
+   - Requires a path to a file as a parameter
+   - Turns any XML file into a graph
+   - Supports cyclic and acyclic data
+   - Reference usage:
+    `<ref reference="Tag[num]"/>`
