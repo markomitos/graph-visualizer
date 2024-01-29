@@ -7,6 +7,42 @@
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
     <title>{{title}}</title>
     {% block head_sadrzaj %}{% endblock %}
+
+    <style>
+    #bubbles-container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .bubble {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 10px;
+        border-style: solid;
+        border-width: thin;
+        border-color: slateblue;
+    }
+
+    .delete-btn {
+        cursor: pointer;
+        margin-left: 10px;
+        color: red;
+    }
+
+    .bottom-right {
+        border-left: 1px black solid;
+        display: flex;
+        justify-items: center;
+        padding: 5px 10px 5px 10px;
+    }
+
+    #applied-queries {
+    padding-right: 5px;
+}
+</style>
+
 </head>
 <body>
 <div class="page">
@@ -45,14 +81,47 @@
 
                       <label for="value">Value: </label><input id="value">
                   </div>
-                  <button>Submit</button>
+                  <button onclick="addBubble()">Submit</button>
               </div>
 
               <div class="bottom-right">
-                  <div class="applied-queries">
-                      <p>Applied queries:</p>
-                      <p>filter1</p>
-                  </div>
+                  <p id="applied-queries">Applied queries: </p>
+                  <div id="bubbles-container"></div>
+                    <script>
+                        function addBubble() {
+                            var filter = document.getElementById("filter").value;
+                            var comparator = document.getElementById("select-comparator").value;
+                            var value = document.getElementById("value").value;
+
+                            if (filter && comparator && value) {
+                                var bubbleContainer = document.getElementById("bubbles-container");
+
+                                // Create bubble element
+                                var bubble = document.createElement("div");
+                                bubble.className = "bubble";
+                                bubble.textContent = filter + " " + comparator + " " + value;
+
+                                // Create delete button
+                                var deleteBtn = document.createElement("span");
+                                deleteBtn.className = "delete-btn";
+                                deleteBtn.textContent = "X";
+                                deleteBtn.onclick = function () {
+                                    bubbleContainer.removeChild(bubble);
+                                };
+
+                                // Append delete button to bubble
+                                bubble.appendChild(deleteBtn);
+
+                                // Append bubble to container
+                                bubbleContainer.appendChild(bubble);
+
+                                // Clear input fields
+                                document.getElementById("filter").value = "";
+                                document.getElementById("select-comparator").value = "==";
+                                document.getElementById("value").value = "";
+                            }
+                        }
+                    </script>
               </div>
 
           </div>

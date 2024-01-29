@@ -96,12 +96,16 @@ table{
 }
 
 .bottom-right {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 10px 5px 10px;
     border-left:1px black solid;
 }
 
 .applied-queries {
     display: flex;
     flex-direction: row;
+    padding: 5px 10px 5px 10px;
 }
 
 .left {
