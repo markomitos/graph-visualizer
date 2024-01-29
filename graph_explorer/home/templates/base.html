@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <script type="text/javascript" src="https://d3js.org/d3.v3.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <title>{{title}}</title>
+    {% block head_sadrzaj %}{% endblock %}
+
+    <style>
+    #bubbles-container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .bubble {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 10px;
+        border-style: solid;
+        border-width: thin;
+        border-color: slateblue;
+    }
+
+    .delete-btn {
+        cursor: pointer;
+        margin-left: 10px;
+        color: red;
+    }
+
+    .bottom-right {
+        border-left: 1px black solid;
+        display: flex;
+        justify-items: center;
+        padding: 5px 10px 5px 10px;
+    }
+
+    #applied-queries {
+    padding-right: 5px;
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+      <div class="header">
+
+          <div class="left-header">
+              <h1>Graph Visualizer</h1>
+          </div>
+
+          <div class="right-header">
+
+            <div class="top-right">
+                <div class="plugins">
+                    <label for="data-source-plugin">Data source plugin</label><select class="plugin-select" id="data-source-plugin"></select>
+                    <label for="visualizer-plugin">Visualizer plugin</label><select class="plugin-select" id="visualizer-plugin"></select>
+                </div>
+
+                <div class="search">
+                    <label for="search">Search: </label><input id="search">
+                </div>
+            </div>
+
+              <div class="center-right">
+                  <div class="filter">
+                      <label for="filter">Filter: </label><input id="filter">
+
+                      <label for="select-comparator">Comparator: </label>
+                        <select id="select-comparator">
+                          <option value="==">==</option>
+                          <option value=">">></option>
+                          <option value=">=">>=</option>
+                          <option value="<"><</option>
+                          <option value="<="><=</option>
+                          <option value="!=">!=</option>
+                        </select>
+
+                      <label for="value">Value: </label><input id="value">
+                  </div>
+                  <button onclick="addBubble()">Submit</button>
+              </div>
+
+              <div class="bottom-right">
+                  <p id="applied-queries">Applied queries: </p>
+                  <div id="bubbles-container"></div>
+                    <script>
+                        function addBubble() {
+                            var filter = document.getElementById("filter").value;
+                            var comparator = document.getElementById("select-comparator").value;
+                            var value = document.getElementById("value").value;
+
+                            if (filter && comparator && value) {
+                                var bubbleContainer = document.getElementById("bubbles-container");
+
+                                // Create bubble element
+                                var bubble = document.createElement("div");
+                                bubble.className = "bubble";
+                                bubble.textContent = filter + " " + comparator + " " + value;
+
+                                // Create delete button
+                                var deleteBtn = document.createElement("span");
+                                deleteBtn.className = "delete-btn";
+                                deleteBtn.textContent = "X";
+                                deleteBtn.onclick = function () {
+                                    bubbleContainer.removeChild(bubble);
+                                };
+
+                                // Append delete button to bubble
+                                bubble.appendChild(deleteBtn);
+
+                                // Append bubble to container
+                                bubbleContainer.appendChild(bubble);
+
+                                // Clear input fields
+                                document.getElementById("filter").value = "";
+                                document.getElementById("select-comparator").value = "==";
+                                document.getElementById("value").value = "";
+                            }
+                        }
+                    </script>
+              </div>
+
+          </div>
+      </div>
+      <div class="left">
+          <div id="tree-view">
+                {% block treeview %}{% endblock %}
+          </div>
+          <div id="bird-view">
+              {% block birdview %}{% endblock %}
+          </div>
+          <p>left</p>
+      </div>
+      <div class="center">
+          <p>center</p>
+      </div>
+</div>
+</body>
+</html>
