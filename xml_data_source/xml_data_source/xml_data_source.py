@@ -3,7 +3,9 @@ import xml.etree.ElementTree as ET
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 class XMLDataSource(DataSourceBase):
+
     def __init__(self, xml_file):
         self.xml_file = xml_file
         self.counter = Counter()
@@ -26,9 +28,8 @@ class XMLDataSource(DataSourceBase):
         if len(element) == 0:
             # If it has no children add an attribute to the parent
             if parent_node is not None:
-                parent_node_attrib = graph.nodes[parent_node].get('attributes', {})
-                parent_node_attrib[element.tag] = element.text
-                graph.nodes[parent_node]['attributes'] = parent_node_attrib
+                node = graph.nodes[parent_node]
+                node[element.tag] = element.text
 
                 # Handle reference
                 reference = node_attributes.get("reference")
@@ -68,17 +69,18 @@ class Counter:
 
 
 if __name__ == "__main__":
-    data_source = XMLDataSource('train_stations.xml')
+    data_source = XMLDataSource('persons.xml')
     graph = data_source.fetch_data()
 
-    # Visualize the graph
-    plt.figure(figsize=(12, 8))
-    pos = nx.spring_layout(graph)
-    nx.draw(graph, pos, with_labels=True, node_size=3000, node_color="skyblue", font_size=10, font_weight="bold")
-    edge_labels = nx.get_edge_attributes(graph, 'distance')
-    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
-    plt.title("XML Graph")
-    plt.show()
+    # # Visualize the graph
+    # plt.figure(figsize=(12, 8))
+    # pos = nx.spring_layout(graph)
+    # nx.draw(graph, pos, with_labels=True, node_size=3000, node_color="skyblue", font_size=10, font_weight="bold")
+    # edge_labels = nx.get_edge_attributes(graph, 'distance')
+    # nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
+    # plt.title("XML Graph")
+    # plt.show()
+
 
     # Test
     print("Number of nodes:", graph.number_of_nodes())
