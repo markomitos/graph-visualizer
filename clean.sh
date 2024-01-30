@@ -15,7 +15,7 @@ remove_eggs api
 remove_eggs app_platform
 remove_eggs block_visualizer
 remove_eggs simple_visualizer
-remove_eggs train_data_source
+remove_eggs xml_data_source
 remove_eggs airport_data_source
 
 # remove db
