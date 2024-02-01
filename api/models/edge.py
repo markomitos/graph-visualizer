@@ -6,8 +6,10 @@ class Edge:
         self.weight = weight
 
     def __str__(self):
-        directed_str = "Directed" if self.is_directed else "Undirected"
-        return f"Edge: {self.source} {'->' if self.is_directed else '<->'} {self.target}, {directed_str}, Weight: {self.weight}"
+        return {
+            "source": self.source.id,
+            "target": self.target.id
+        }
 
     def is_adjacent(self, vertex):
         return self.source == vertex or (not self.is_directed and self.target == vertex)
@@ -16,3 +18,9 @@ class Edge:
         if not self.is_directed:
             raise ValueError("Cannot reverse an undirected edge")
         self.source, self.target = self.target, self.source
+
+    def to_dict(self):
+        return {
+            "source": self.source.id,
+            "target": self.target.id
+        }

@@ -4,4 +4,7 @@ class Vertex:
         self.data = data
 
     def __str__(self):
-        return f"Vertex ID: {self.id}, Data: {self.data}"
+        return {"id": self.id, "data": self.data}
+
+    def to_dict(self):
+        return {"id": self.id, "data": self.data}
