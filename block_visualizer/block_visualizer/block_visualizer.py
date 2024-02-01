@@ -38,25 +38,38 @@ class BlockVisualiser(VisualizerBase):
                         </style>
                         <div id="graph-container"></div>
                         <script>
+                            const width = 928;
+                            const height = 680;
+
                             // Create the SVG element
                             const svg = d3.select("#graph-container")
                                 .append("svg")
-                                .attr("width", "100%")
-                                .attr("height", "100%");
+                                .attr("width", width)
+                                .attr("height", height)
+                                .attr("viewBox", `0 0 ${width} ${height}`)
+                                .call(d3.zoom()
+                                      .scaleExtent([1 / 2, 4])
+                                      .on("zoom", zoomed));
+
+                            const container = svg.append("g");
+
+                            function zoomed(event) {
+                                container.attr("transform", event.transform);
+                            }
 
                             // Create the data for the graph
                             const graphData = """ + json.dumps(data.to_dict()) + """;
 
                             // Define the simulation with a force layout algorithm
                             const simulation = d3.forceSimulation()
-                                .force("link", d3.forceLink().id(d => d.id).distance(100))
+                                .force("link", d3.forceLink().id(d => d.id).distance(200))
                                 .force("charge", d3.forceManyBody().strength(-300))
-                                .force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)) // Center force
-                                .force("x", d3.forceX(window.innerWidth / 2).strength(0.1)) // X force towards center
-                                .force("y", d3.forceY(window.innerHeight / 2).strength(0.1)); // Y force towards center
+                                .force("center", d3.forceCenter(width / 2, height / 2)) // Center force
+                                .force("x", d3.forceX(width / 2).strength(0.1)) // X force towards center
+                                .force("y", d3.forceY(height / 2).strength(0.1)); // Y force towards center
 
                             // Render the edges
-                            const link = svg.append("g")
+                            const link = container.append("g")
                                 .selectAll("line")
                                 .data(graphData.links)
                                 .enter().append("line")
@@ -65,7 +78,7 @@ class BlockVisualiser(VisualizerBase):
                                 .attr("stroke-width", 2);
 
                             // Render the nodes
-                            const node = svg.append("g")
+                            const node = container.append("g")
                                 .selectAll("g")
                                 .data(graphData.nodes)
                                 .enter().append("g")
