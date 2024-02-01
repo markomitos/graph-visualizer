@@ -16,10 +16,10 @@ class BlockVisualiser(VisualizerBase):
 
         data = Graph()
 
-        data.add_vertex(1,{"name":"Jimmy","age":10})
-        data.add_vertex(2,{"name":"Tim","age":11})
-        data.add_vertex(3,{"name":"Johnny","age":10})
-        data.add_edge(1,2)
+        data.add_vertex(1, {"name": "Jimmy", "age": 10})
+        data.add_vertex(2, {"name": "Tim", "age": 11})
+        data.add_vertex(3, {"name": "Johnny", "age": 10})
+        data.add_edge(1, 2)
 
         graph_data = {
             "nodes": [{"id": "Node1"}, {"id": "Node2"}, {"id": "Node3"}],
@@ -50,8 +50,10 @@ class BlockVisualiser(VisualizerBase):
                             // Define the simulation with a force layout algorithm
                             const simulation = d3.forceSimulation()
                                 .force("link", d3.forceLink().id(d => d.id).distance(100))
-                                .force("charge", d3.forceManyBody().strength(-100))
-                                .force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2));
+                                .force("charge", d3.forceManyBody().strength(-300))
+                                .force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2)) // Center force
+                                .force("x", d3.forceX(window.innerWidth / 2).strength(0.1)) // X force towards center
+                                .force("y", d3.forceY(window.innerHeight / 2).strength(0.1)); // Y force towards center
 
                             // Render the edges
                             const link = svg.append("g")
@@ -64,21 +66,25 @@ class BlockVisualiser(VisualizerBase):
 
                             // Render the nodes
                             const node = svg.append("g")
-                                .selectAll("rect")
+                                .selectAll("g")
                                 .data(graphData.nodes)
-                                .enter().append("rect")
-                                .attr("width", 100)  // Adjust the width of the square
-                                .attr("height", 50)  // Adjust the height of the square
-                                .attr("fill", "#1f77b4")
-                                // Enable drag behavior
+                                .enter().append("g")
+                                .attr("class", "node")
                                 .call(d3.drag()
                                       .on("start", dragstarted)
                                       .on("drag", dragged)
                                       .on("end", dragended));
 
-                            
+                            // Append rectangles to nodes
+                            node.append("rect")
+                                .attr("width", 100)  // Adjust the width of the square
+                                .attr("height", 50)  // Adjust the height of the square
+                                .attr("fill", "#1f77b4");
+
+                            // Append text to nodes
                             node.append("text")
                                 .style("text-anchor", "middle")
+                                .attr("dy", "0.35em")
                                 .text(d => JSON.stringify(d.data));  // Display name and age
 
                             // Define drag behavior functions
@@ -101,13 +107,11 @@ class BlockVisualiser(VisualizerBase):
 
                             // Update the position of nodes and edges on each tick of the simulation
                             simulation.nodes(graphData.nodes).on("tick", () => {
+                                node.attr("transform", d => `translate(${d.x}, ${d.y})`);
                                 link.attr("x1", d => d.source.x)
                                     .attr("y1", d => d.source.y)
                                     .attr("x2", d => d.target.x)
                                     .attr("y2", d => d.target.y);
-
-                                node.attr("x", d => d.x)
-                                    .attr("y", d => d.y);
                             });
 
                             simulation.force("link").links(graphData.links);
@@ -115,4 +119,3 @@ class BlockVisualiser(VisualizerBase):
                         """
 
         return html
-
