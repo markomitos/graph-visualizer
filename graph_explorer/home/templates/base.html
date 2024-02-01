@@ -9,6 +9,12 @@
     {% block head_sadrzaj %}{% endblock %}
 
     <style>
+    .content_graph{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    }
     #bubbles-container {
         display: flex;
         align-items: center;
@@ -23,6 +29,9 @@
         border-style: solid;
         border-width: thin;
         border-color: slateblue;
+    }
+    .center{
+     width: 80%;
     }
 
     .delete-btn {
@@ -40,6 +49,8 @@
 
     #applied-queries {
     padding-right: 5px;
+
+
 }
 </style>
 
@@ -126,7 +137,8 @@
 
           </div>
       </div>
-      <div class="left">
+      <div class="content_graph">
+          <div class="left">
           <div id="tree-view">
                 {% block treeview %}{% endblock %}
           </div>
@@ -136,8 +148,11 @@
           <p>left</p>
       </div>
       <div class="center">
-          <p>center</p>
+          {{ visualization_html | safe }}
+          <span>center</span>
       </div>
+      </div>
+
 </div>
 </body>
 </html>
