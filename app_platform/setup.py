@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'app_platform = app_platform.app_platform:main',
+            'app_platform = app_platform.app_platform:AppPlatform',
         ]
     }
 )
