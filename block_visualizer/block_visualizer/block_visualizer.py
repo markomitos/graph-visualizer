@@ -45,6 +45,7 @@ class BlockVisualiser(VisualizerBase):
                             const svg = d3.select("#graph-container")
                                 .append("svg")
                                 .attr("viewBox", `0 0 ${width} ${height}`)
+                                .style("height", "100%")
                                 .call(d3.zoom()
                                       .scaleExtent([1 / 2, 4])
                                       .on("zoom", zoomed));
