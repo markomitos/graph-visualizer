@@ -62,8 +62,8 @@ class BlockVisualiser(VisualizerBase):
 
                             // Define the simulation with a force layout algorithm
                             const simulation = d3.forceSimulation()
-                                .force("link", d3.forceLink().id(d => d.id).distance(200))
-                                .force("charge", d3.forceManyBody().strength(-300))
+                                .force("link", d3.forceLink().id(d => d.id).distance(300))
+                                .force("charge", d3.forceManyBody().strength(-500))
                                 .force("center", d3.forceCenter(width / 2, height / 2)) // Center force
                                 .force("x", d3.forceX(width / 2).strength(0.1)) // X force towards center
                                 .force("y", d3.forceY(height / 2).strength(0.1)); // Y force towards center
