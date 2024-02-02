@@ -30,6 +30,11 @@
         border-width: thin;
         border-color: slateblue;
     }
+    #bird-view{
+        width: 100%;
+        height: 200px;
+        border: black solid 1px;
+    }
     .center{
      width: 80%;
     }
@@ -143,7 +148,7 @@
                 {% block treeview %}{% endblock %}
           </div>
           <div id="bird-view">
-              {% block birdview %}{% endblock %}
+
           </div>
           <p>left</p>
       </div>
@@ -152,7 +157,13 @@
 
       </div>
       </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var centerContents = $('.center').contents().clone();
+            $('#bird-view').append(centerContents);
+        });
+    </script>
 </div>
 </body>
 </html>
