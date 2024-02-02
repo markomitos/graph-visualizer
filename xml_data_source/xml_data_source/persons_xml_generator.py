@@ -45,4 +45,4 @@ def generate_persons_xml(num_persons):
     print("XML file 'persons.xml' has been generated successfully.")
 
 if __name__ == "__main__":
-    generate_persons_xml(100)  # Generate XML data for 5 persons
+    generate_persons_xml(5)  # Generate XML data for 5 persons

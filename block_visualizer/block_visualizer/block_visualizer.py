@@ -1,5 +1,6 @@
 import json
 
+import networkx as nx
 from models.graph import Graph
 from visualizer_api.visualizer_api import VisualizerBase
 
@@ -14,17 +15,17 @@ class BlockVisualiser(VisualizerBase):
     def render(self, data: Graph) -> str:
         # Create a simple graph with 3 nodes and one link
 
-        data = Graph()
+        # data = Graph()
 
-        data.add_vertex(1, {"name": "Jimmy", "age": 10})
-        data.add_vertex(2, {"name": "Tim", "age": 11})
-        data.add_vertex(3, {"name": "Johnny", "age": 10})
-        data.add_edge(1, 2)
+        # data.add_vertex(1, {"name": "Jimmy", "age": 10})
+        # data.add_vertex(2, {"name": "Tim", "age": 11})
+        # data.add_vertex(3, {"name": "Johnny", "age": 10})
+        # data.add_edge(1, 2)
 
-        graph_data = {
-            "nodes": [{"id": "Node1"}, {"id": "Node2"}, {"id": "Node3"}],
-            "links": [{"source": "Node1", "target": "Node2"}]
-        }
+        # graph_data = {
+        #     "nodes": [{"id": "Node1"}, {"id": "Node2"}, {"id": "Node3"}],
+        #     "links": [{"source": "Node1", "target": "Node2"}]
+        # }
 
         # Construct the HTML for the graph visualization using D3.js
         html = """

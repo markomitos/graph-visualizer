@@ -1,7 +1,8 @@
 from visualizer_api.data_source_api import DataSourceBase
 import xml.etree.ElementTree as ET
-import networkx as nx
 import matplotlib.pyplot as plt
+
+from api.models.graph import Graph
 
 
 class XMLDataSource(DataSourceBase):
@@ -10,14 +11,14 @@ class XMLDataSource(DataSourceBase):
         self.xml_file = xml_file
         self.counter = Counter()
 
-    def __init__(self):
-        pass
+    # def __init__(self):
+    #     pass
 
     def name(self) -> str:
         return 'XML Data Source'
 
-    def fetch_data(self) -> nx.Graph:
-        graph = nx.DiGraph()
+    def fetch_data(self) -> Graph:
+        graph = Graph()
         tree = ET.parse(self.xml_file)
         root = tree.getroot()
 
@@ -27,12 +28,13 @@ class XMLDataSource(DataSourceBase):
 
     def construct_graph(self, graph, element, parent_node=None):
         node_attributes = element.attrib
+        print(node_attributes)
 
         if len(element) == 0:
             # If it has no children add an attribute to the parent
             if parent_node is not None:
-                node = graph.nodes[parent_node]
-                node[element.tag] = element.text
+                node = graph.get_vertex(parent_node)
+                node.data[element.tag] = element.text
 
                 # Handle reference
                 reference = node_attributes.get("reference")
@@ -45,7 +47,7 @@ class XMLDataSource(DataSourceBase):
             self.counter.increment(element.tag)
 
             node_id = f"{self.counter[element.tag]}_{element.tag}"
-            graph.add_node(node_id, **node_attributes)
+            graph.add_vertex(node_id, node_attributes)
 
             # Recursively process child elements
             for child in element:
@@ -74,6 +76,8 @@ class Counter:
 if __name__ == "__main__":
     data_source = XMLDataSource('persons.xml')
     graph = data_source.fetch_data()
+
+    dict = graph.to_dict()
 
     # # Visualize the graph
     # plt.figure(figsize=(12, 8))
