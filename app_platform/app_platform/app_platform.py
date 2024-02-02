@@ -7,8 +7,8 @@ from visualizer_api.visualizer_api import VisualizerBase
 class AppPlatform():
 
     def __init__(self):
-        self.data_source_plugins = self.load_plugins("data_source")
-        self.visualizer_plugins = self.load_plugins("visualizer")
+        self.data_source_plugins = self.load_plugins("data_sources")
+        self.visualizer_plugins = self.load_plugins("visualizers")
         self._current_data_source_index = 0
         self._current_visualizer_index = 0
 
@@ -35,3 +35,7 @@ class AppPlatform():
             plugin = p()
             plugins.append(plugin)
         return plugins
+
+
+if __name__ == "__main__":
+    app = AppPlatform()

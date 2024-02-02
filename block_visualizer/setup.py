@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     namespace_packages=['block_visualizer'],
     install_requires=[
-        'visualizer-visualizer_api==0.1',
+        'visualizer_api==0.1',
     ],
     entry_points={
         'visualizers': [

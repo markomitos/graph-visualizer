@@ -16,9 +16,9 @@ class Graph:
         target_vertex = None
 
         for vertex in self.vertices:
-            if vertex.vid == source_vid:
+            if vertex.id == source_vid:
                 source_vertex = vertex
-            if vertex.vid == target_vid:
+            if vertex.id == target_vid:
                 target_vertex = vertex
 
         if source_vertex is None or target_vertex is None:
@@ -30,9 +30,9 @@ class Graph:
     def get_neighbors(self, vid):
         neighbors = []
         for edge in self.edges:
-            if edge.source.vid == vid:
+            if edge.source.id == vid:
                 neighbors.append(edge.target)
-            elif not edge.is_directed and edge.target.vid == vid:
+            elif not edge.is_directed and edge.target.id == vid:
                 neighbors.append(edge.source)
         return neighbors
 
@@ -88,17 +88,12 @@ class Graph:
 
         tree = Graph()
         for source, target, weight in tree_edges:
-            tree.add_edge(source.vid, target.vid, weight=weight)
+            tree.add_edge(source.id, target.id, weight=weight)
 
         return tree
 
     def __str__(self):
-        result = "Vertices:\n"
-        for vertex in self.vertices:
-            result += f"{vertex.vid}: {vertex.data}\n"
+        return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
 
-        result += "\nEdges:\n"
-        for edge in self.edges:
-            result += f"{edge.source.vid} {'->' if edge.is_directed else '<->'} {edge.target.vid}, Weight: {edge.weight}\n"
-
-        return result
+    def to_dict(self):
+        return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
