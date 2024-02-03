@@ -55,7 +55,11 @@
     #applied-queries {
     padding-right: 5px;
 
-
+    #graph-container {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
 }
 </style>
 
@@ -148,21 +152,95 @@
                 {% block treeview %}{% endblock %}
           </div>
           <div id="bird-view">
+              <svg id="bird-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+                  <g id="bird-graph-g" transform="translate(271.5788644740471,88.54958197403138) scale(0.5)">
 
+                  </g>
+                  <rect id="bird-view-scope" width="" height=""></rect>
+
+              </svg>
           </div>
           <p>left</p>
       </div>
       <div class="center">
-          {{ visualization_html | safe }}
+          <div id="graph-container">
+              <svg id="center-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+                  <g id="center-graph-g">
 
+                  </g>
+
+                  </rect>
+              </svg>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+            {{ visualization_html | safe }}
+        <script>
+            const svg = d3.select("#center-graph-svg");
+            const g = d3.select("#center-graph-g");
+            const birdSVG = d3.select("#bird-graph-svg");
+            const rect = d3.select("#bird-view-scope");
+
+            const zoom = d3.zoom()
+                .scaleExtent([1/2, 4]) // Set the minimum and maximum zoom levels
+                .on("zoom", zoomed);
+
+            svg.call(zoom);
+
+            function zoomed(event) {
+                g.attr("transform", event.transform);
+
+                const centerTransform = event.transform;
+
+                const scaleX = centerTransform.k;
+                const scaleY = centerTransform.k;
+                const translateX = centerTransform.x;
+                const translateY = centerTransform.y;
+
+                // Calculate the dimensions of the red rectangle based on the zoom level
+                const viewBox = svg.attr("viewBox").split(" ");
+                const viewBoxWidth = parseFloat(viewBox[2]);
+                const viewBoxHeight = parseFloat(viewBox[3]);
+
+                const rectWidth = viewBoxWidth / scaleX;
+                const rectHeight = viewBoxHeight / scaleY;
+
+                // Calculate the position of the red rectangle based on the translation
+                const rectX = -translateX / scaleX;
+                const rectY = -translateY / scaleY;
+
+                // Update the existing red rectangle attributes
+                rect.attr("x", rectX)
+                    .attr("y", rectY)
+                    .attr("width", rectWidth)
+                    .attr("height", rectHeight)
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 2)
+                    .attr("fill", "none");
+            }
+        </script>
+          </div>
       </div>
       </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            var centerContents = $('.center').contents().clone();
-            $('#bird-view').append(centerContents);
+     $(document).ready(function() {
+        // Function to update the bird-view div with the contents of the center div
+        const centerG = $('#center-graph-g')
+        const birdViewG =  $('#bird-graph-g')
+
+
+         function updateBirdView() {
+            var centerContents = centerG.contents().clone();
+            birdViewG.empty().append(centerContents);
+        }
+
+        // Initial update
+        updateBirdView();
+
+        // Listen for common events in the document and update the bird-view accordingly
+        $(document).on('mousemove', function() {
+            updateBirdView();
         });
+    });
     </script>
 </div>
 </body>

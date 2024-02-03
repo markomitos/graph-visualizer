@@ -29,32 +29,11 @@ class BlockVisualiser(VisualizerBase):
         # Construct the HTML for the graph visualization using D3.js
         html = """
                         <script src="https://d3js.org/d3.v7.min.js"></script>
-                        <style>
-                            #graph-container {
-                                width: 100%;
-                                height: 100%;
-                                overflow: hidden;
-                            }
-                        </style>
-                        <div id="graph-container"></div>
+                        <script src="https://d3js.org/d3-force.v3.min.js"></script>
                         <script>
                             const width = 928;
                             const height = 680;
-
-                            // Create the SVG element
-                            const svg = d3.select("#graph-container")
-                                .append("svg")
-                                .attr("viewBox", `0 0 ${width} ${height}`)
-                                .style("height", "100%")
-                                .call(d3.zoom()
-                                      .scaleExtent([1 / 2, 4])
-                                      .on("zoom", zoomed));
-
-                            const container = svg.append("g");
-
-                            function zoomed(event) {
-                                container.attr("transform", event.transform);
-                            }
+                            const container = d3.select("#center-graph-g");
 
                             // Create the data for the graph
                             const graphData = """ + json.dumps(data.to_dict()) + """;

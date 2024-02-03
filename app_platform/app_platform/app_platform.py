@@ -32,7 +32,11 @@ class AppPlatform():
         for ep in pkg_resources.iter_entry_points(group=group_name):
             p = ep.load()
             print(f"{ep.name} {p}")
-            plugin = p()
+            if(group_name == "data_sources"):
+                plugin = p("persons.xml")
+            else:
+                plugin = p()
+
             plugins.append(plugin)
         return plugins
 
