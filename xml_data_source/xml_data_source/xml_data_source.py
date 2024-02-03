@@ -1,7 +1,8 @@
 from visualizer_api.data_source_api import DataSourceBase
 import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
 
-from models.graph import Graph
+from api.models.graph import Graph
 
 
 class XMLDataSource(DataSourceBase):
@@ -29,23 +30,27 @@ class XMLDataSource(DataSourceBase):
         node_attributes = element.attrib
         print(node_attributes)
 
+        # If it has no children add an attribute to the parent or handle reference
         if len(element) == 0:
-            # If it has no children add an attribute to the parent
-            if parent_node is not None:
-                node = graph.get_vertex(parent_node)
-                node.data[element.tag] = element.text
 
-                # Handle reference
+            if parent_node is not None:
                 reference = node_attributes.get("reference")
+
                 if (reference is not None):
+                    # Handle reference
                     index = int(reference.split('[')[1].rstrip(']'))
                     tag = reference.split('[')[0]
-                    reference_node_id = f"{index}_{tag}"
+                    reference_node_id = f"{tag}_{index}"
                     graph.add_edge(parent_node, reference_node_id)
+                else:
+                    # Add an attribute
+                    node = graph.get_vertex(parent_node)
+                    node.data[element.tag] = element.text
+
         else:
             self.counter.increment(element.tag)
 
-            node_id = f"{self.counter[element.tag]}_{element.tag}"
+            node_id = f"{element.tag}_{self.counter[element.tag]}"
             graph.add_vertex(node_id, node_attributes)
 
             # Recursively process child elements
@@ -77,16 +82,6 @@ if __name__ == "__main__":
     graph = data_source.fetch_data()
 
     dict = graph.to_dict()
-
-    # # Visualize the graph
-    # plt.figure(figsize=(12, 8))
-    # pos = nx.spring_layout(graph)
-    # nx.draw(graph, pos, with_labels=True, node_size=3000, node_color="skyblue", font_size=10, font_weight="bold")
-    # edge_labels = nx.get_edge_attributes(graph, 'distance')
-    # nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
-    # plt.title("XML Graph")
-    # plt.show()
-
 
     # Test
     print("Number of nodes:", graph.number_of_nodes())
