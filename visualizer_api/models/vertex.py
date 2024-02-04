@@ -8,3 +8,6 @@ class Vertex:
 
     def to_dict(self):
         return {"id": self.id, "data": self.data}
+
+    def add_data(self, key: str, value):
+        self.data[key] = value
