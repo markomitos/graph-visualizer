@@ -21,8 +21,13 @@ class Graph:
             if vertex.id == target_vid:
                 target_vertex = vertex
 
-        if source_vertex is None or target_vertex is None:
-            raise ValueError("Source or target vertex not found")
+        if source_vertex is None:
+            self.add_vertex(source_vid, {})
+            source_vertex = self.get_vertex(source_vid)
+
+        if target_vertex is None:
+            self.add_vertex(target_vid, {})
+            target_vertex = self.get_vertex(target_vid)
 
         edge = Edge(source_vertex, target_vertex, is_directed, weight)
         self.edges.append(edge)
@@ -91,6 +96,12 @@ class Graph:
             tree.add_edge(source.id, target.id, weight=weight)
 
         return tree
+
+    def get_vertex(self, key):
+        for vertex in self.vertices:
+            if vertex.id == key:
+                return vertex
+        return None
 
     def __str__(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}

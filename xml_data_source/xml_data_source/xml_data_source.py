@@ -1,7 +1,8 @@
 from visualizer_api.data_source_api import DataSourceBase
 import xml.etree.ElementTree as ET
-import networkx as nx
 import matplotlib.pyplot as plt
+
+from models.graph import Graph
 
 
 class XMLDataSource(DataSourceBase):
@@ -10,14 +11,14 @@ class XMLDataSource(DataSourceBase):
         self.xml_file = xml_file
         self.counter = Counter()
 
-    def __init__(self):
-        pass
+    # def __init__(self):
+    #     pass
 
     def name(self) -> str:
         return 'XML Data Source'
 
-    def fetch_data(self) -> nx.Graph:
-        graph = nx.DiGraph()
+    def fetch_data(self) -> Graph:
+        graph = Graph()
         tree = ET.parse(self.xml_file)
         root = tree.getroot()
 
@@ -27,25 +28,30 @@ class XMLDataSource(DataSourceBase):
 
     def construct_graph(self, graph, element, parent_node=None):
         node_attributes = element.attrib
+        print(node_attributes)
 
+        # If it has no children add an attribute to the parent or handle reference
         if len(element) == 0:
-            # If it has no children add an attribute to the parent
-            if parent_node is not None:
-                node = graph.nodes[parent_node]
-                node[element.tag] = element.text
 
-                # Handle reference
+            if parent_node is not None:
                 reference = node_attributes.get("reference")
+
                 if (reference is not None):
+                    # Handle reference
                     index = int(reference.split('[')[1].rstrip(']'))
                     tag = reference.split('[')[0]
-                    reference_node_id = f"{index}_{tag}"
+                    reference_node_id = f"{tag}_{index}"
                     graph.add_edge(parent_node, reference_node_id)
+                else:
+                    # Add an attribute
+                    node = graph.get_vertex(parent_node)
+                    node.data[element.tag] = element.text
+
         else:
             self.counter.increment(element.tag)
 
-            node_id = f"{self.counter[element.tag]}_{element.tag}"
-            graph.add_node(node_id, **node_attributes)
+            node_id = f"{element.tag}_{self.counter[element.tag]}"
+            graph.add_vertex(node_id, node_attributes)
 
             # Recursively process child elements
             for child in element:
@@ -75,15 +81,7 @@ if __name__ == "__main__":
     data_source = XMLDataSource('persons.xml')
     graph = data_source.fetch_data()
 
-    # # Visualize the graph
-    # plt.figure(figsize=(12, 8))
-    # pos = nx.spring_layout(graph)
-    # nx.draw(graph, pos, with_labels=True, node_size=3000, node_color="skyblue", font_size=10, font_weight="bold")
-    # edge_labels = nx.get_edge_attributes(graph, 'distance')
-    # nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels)
-    # plt.title("XML Graph")
-    # plt.show()
-
+    dict = graph.to_dict()
 
     # Test
     print("Number of nodes:", graph.number_of_nodes())

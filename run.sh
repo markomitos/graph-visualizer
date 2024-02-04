@@ -18,7 +18,7 @@ run_server() {
 
 
 # build components
-lay_egs ./api
+lay_egs ./visualizer_api
 lay_egs ./app_platform
 lay_egs ./simple_visualizer
 lay_egs ./block_visualizer

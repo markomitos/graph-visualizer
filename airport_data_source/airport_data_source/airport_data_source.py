@@ -4,10 +4,10 @@ from models.graph import Graph
 
 class AirportDataSource(DataSourceBase):
 
-    def __init__(self):
-        pass
-    # def __init__(self, data: str):
-    #     self.data = data
+    # def __init__(self):
+    #     pass
+    def __init__(self, data: str):
+        self.data = data
 
     def name(self) -> str:
         return 'Airport Data Source'

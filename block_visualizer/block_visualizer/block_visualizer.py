@@ -1,5 +1,6 @@
 import json
 
+import networkx as nx
 from models.graph import Graph
 from visualizer_api.visualizer_api import VisualizerBase
 
@@ -14,17 +15,17 @@ class BlockVisualiser(VisualizerBase):
     def render(self, data: Graph) -> str:
         # Create a simple graph with 3 nodes and one link
 
-        data = Graph()
+        # data = Graph()
 
-        data.add_vertex(1, {"name": "Jimmy", "age": 10})
-        data.add_vertex(2, {"name": "Tim", "age": 11})
-        data.add_vertex(3, {"name": "Johnny", "age": 10})
-        data.add_edge(1, 2)
+        # data.add_vertex(1, {"name": "Jimmy", "age": 10})
+        # data.add_vertex(2, {"name": "Tim", "age": 11})
+        # data.add_vertex(3, {"name": "Johnny", "age": 10})
+        # data.add_edge(1, 2)
 
-        graph_data = {
-            "nodes": [{"id": "Node1"}, {"id": "Node2"}, {"id": "Node3"}],
-            "links": [{"source": "Node1", "target": "Node2"}]
-        }
+        # graph_data = {
+        #     "nodes": [{"id": "Node1"}, {"id": "Node2"}, {"id": "Node3"}],
+        #     "links": [{"source": "Node1", "target": "Node2"}]
+        # }
 
         # Construct the HTML for the graph visualization using D3.js
         html = """
@@ -61,8 +62,8 @@ class BlockVisualiser(VisualizerBase):
 
                             // Define the simulation with a force layout algorithm
                             const simulation = d3.forceSimulation()
-                                .force("link", d3.forceLink().id(d => d.id).distance(200))
-                                .force("charge", d3.forceManyBody().strength(-300))
+                                .force("link", d3.forceLink().id(d => d.id).distance(300))
+                                .force("charge", d3.forceManyBody().strength(-500))
                                 .force("center", d3.forceCenter(width / 2, height / 2)) // Center force
                                 .force("x", d3.forceX(width / 2).strength(0.1)) // X force towards center
                                 .force("y", d3.forceY(height / 2).strength(0.1)); // Y force towards center
