@@ -9,7 +9,7 @@ from xml_data_source.xml_data_source import Counter
 def home(request):
     platform = AppPlatform()
     dataSource1 = platform.data_source_plugins[1]
-    dataSource1.xml_file = "O:\Fakultet\III_GODINA\V_SEMESTAR\Softverski obrasci i komponente\Projekat\graph-visualizer\\xml_data_source\\xml_data_source\persons.xml"
+    dataSource1.xml_file = "D:\Fakultet\\3_GODINA\sok\graph-visualizer\\xml_data_source\\xml_data_source\persons.xml"
     dataSource1.counter = Counter()
 
     dataGraph = dataSource1.fetch_data()

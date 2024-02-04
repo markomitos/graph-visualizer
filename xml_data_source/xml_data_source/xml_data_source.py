@@ -2,7 +2,7 @@ from visualizer_api.data_source_api import DataSourceBase
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
-from api.models.graph import Graph
+from models.graph import Graph
 
 
 class XMLDataSource(DataSourceBase):
