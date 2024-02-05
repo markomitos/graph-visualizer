@@ -46,7 +46,8 @@ class SimpleVisualiser(VisualizerBase):
                                         .attr("refY", 3.5)
                                         .attr("orient", "auto")
                                         .append("polygon")
-                                        .attr("points", "0 0, 10 3.5, 0 7");
+                                        .attr("points", "0 0, 10 3.5, 0 7")
+                                        .attr("fill", "gray")
 
                                     const container = svg.append("g");
 
@@ -65,7 +66,15 @@ class SimpleVisualiser(VisualizerBase):
                                         .force("x", d3.forceX(width / 2).strength(0.1)) // X force towards center
                                         .force("y", d3.forceY(height / 2).strength(0.1)); // Y force towards center
 
-                        
+                                    // Render the edges
+                                    const link = container.append("g")
+                                    .selectAll("line")
+                                    .data(graphData.links)
+                                    .enter().append("line")
+                                    .attr("stroke", "#999")
+                                    .attr("stroke-opacity", 0.6)
+                                    .attr("stroke-width", 2)
+                                    .attr("marker-end", "url(#arrowhead)"); // Add arrowhead marker
                                     
                                     // Render the nodes
                                     const node = container.append("g")
@@ -77,16 +86,6 @@ class SimpleVisualiser(VisualizerBase):
                                               .on("start", dragstarted)
                                               .on("drag", dragged)
                                               .on("end", dragended));
-                                              
-                                    // Render the edges
-                                    const link = container.append("g")
-                                    .selectAll("line")
-                                    .data(graphData.links)
-                                    .enter().append("line")
-                                    .attr("stroke", "#999")
-                                    .attr("stroke-opacity", 0.6)
-                                    .attr("stroke-width", 2)
-                                    .attr("marker-end", "url(#arrowhead)"); // Add arrowhead marker
 
                                      // Append circles to nodes
                                     node.append("circle")
