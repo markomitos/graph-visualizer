@@ -29,3 +29,7 @@ A modular graph visualizer written in python using Django
    - Supports cyclic and acyclic data
    - Reference usage:
     `<ref reference="Tag[num]"/>`
+2. RDF Data source parser
+   - Requires a path to a file as a parameter
+   - Turns any RDF file into a graph
+   - Supports cyclic and acyclic data
