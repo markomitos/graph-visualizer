@@ -1,16 +1,15 @@
-from django.shortcuts import HttpResponse, render
-
+from django.shortcuts import render
 from app_platform.app_platform import AppPlatform
-
 from xml_data_source.xml_data_source import Counter
+from django.http import JsonResponse
 
+graph = None 
 
-# Create your views here.
 def home(request):
+    global graph
     platform = AppPlatform()
     dataSource1 = platform.data_source_plugins[1]
     dataSource1.xml_file = "C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
-    dataSource1.counter = Counter()
     dataSource2 = platform.data_source_plugins[0]
     dataSource2.rdf_file = "C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
 
@@ -18,12 +17,25 @@ def home(request):
     #dataGraph = dataSource2.fetch_data()
     dataGraph = dataGraph.search("")
 
+    graph = dataSource1.fetch_data()
 
     context = {
         "title": "Graph Visualizer",
-        # "graph_data": graph_data,  # Pass the serialized graph data to the template
-        "visualization_html": platform.visualizer_plugins[0].render(dataGraph),
-        "dataSource1": dataGraph.to_dict()
+        "visualization_html": platform.visualizer_plugins[0].render(graph),
+        "dataGraph": graph
     }
     return render(request, "index.html", context)
 
+def get_vertex_info(request):
+    if request.method == 'GET':
+        vertex_id = request.GET.get('vertex_id')
+        if vertex_id and graph:  # Check if graph is not None
+            info = graph.get_vertex_tree_info(vertex_id)
+            if info:
+                return JsonResponse(info)
+            else:
+                return JsonResponse({'error': 'Vertex not found'}, status=404)
+        else:
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
