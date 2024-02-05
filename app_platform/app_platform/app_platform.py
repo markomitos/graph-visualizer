@@ -39,6 +39,17 @@ class AppPlatform():
             plugins.append(plugin)
         return plugins
 
+    def get_data_source_plugin_names(self):
+        plugins = []
+        for plugin in self.data_source_plugins:
+            plugins.append(plugin.name())
+        return plugins
+
+    def get_visualizer_plugin_names(self):
+        plugins = []
+        for plugin in self.visualizer_plugins:
+            plugins.append(plugin.name())
+        return plugins
 
 if __name__ == "__main__":
     app = AppPlatform()
