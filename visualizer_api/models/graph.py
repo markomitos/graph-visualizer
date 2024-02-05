@@ -11,7 +11,7 @@ class Graph:
         vertex = Vertex(vid, data)
         self.vertices.append(vertex)
 
-    def add_edge(self, source_vid, target_vid, is_directed=False, weight=1):
+    def add_edge(self, source_vid, target_vid, is_directed=False, weight=1, value=None):
         source_vertex = None
         target_vertex = None
 
@@ -29,7 +29,7 @@ class Graph:
             self.add_vertex(target_vid, {})
             target_vertex = self.get_vertex(target_vid)
 
-        edge = Edge(source_vertex, target_vertex, is_directed, weight)
+        edge = Edge(source_vertex, target_vertex, is_directed, weight, value)
         self.edges.append(edge)
 
     def get_neighbors(self, vid):
@@ -122,8 +122,32 @@ class Graph:
             info['connections'] = list(map(lambda vertex: vertex.id, self.get_pointing_vertexes(key)))
         return info
 
+    def add_data_to_vertex(self, vid, key, value):
+        vertex = self.get_vertex(vid)
+        if vertex:
+            vertex.add_data(key, value)
+        else:
+            self.add_vertex(vid, {key: value})
+
+    def search(self, query):
+        result_graph = Graph()
+
+        for vertex in self.vertices:
+            if vertex.contains(query):
+                result_graph.add_vertex(vertex.id, vertex.data)
+
+        for edge in self.edges:
+            if edge.source.contains(query) and edge.target.contains(query):
+                result_graph.add_edge(edge.source.id, edge.target.id, edge.is_directed, edge.weight)
+
+        return result_graph
+
+
     def __str__(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
 
     def to_dict(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
+
+    def ids_to_dicts(self):
+        return {"nodes": [vertex.id_to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}

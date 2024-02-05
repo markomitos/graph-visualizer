@@ -3,18 +3,21 @@ from app_platform.app_platform import AppPlatform
 from xml_data_source.xml_data_source import Counter
 from django.http import JsonResponse
 
-FILE_PATH = "C:\\Programiranje\\Django\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
-graph = None  # Initialize graph as None
+graph = None 
 
 def home(request):
     global graph
-    if not graph:
-        platform = AppPlatform()
-        dataSource1 = platform.data_source_plugins[1]
-        dataSource1.xml_file = FILE_PATH
-        dataSource1.counter = Counter()
+    platform = AppPlatform()
+    dataSource1 = platform.data_source_plugins[1]
+    dataSource1.xml_file = "C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
+    dataSource2 = platform.data_source_plugins[0]
+    dataSource2.rdf_file = "C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
 
-        graph = dataSource1.fetch_data()
+    dataGraph = dataSource1.fetch_data()
+    #dataGraph = dataSource2.fetch_data()
+    dataGraph = dataGraph.search("")
+
+    graph = dataSource1.fetch_data()
 
     context = {
         "title": "Graph Visualizer",
