@@ -14,3 +14,9 @@ class Vertex:
 
     def add_data(self, key: str, value):
         self.data[key] = value
+
+    def contains(self, query: str) -> bool:
+        for key, value in self.data.items():
+            if query.lower() in key.lower() or query.lower() in value.lower():
+                return True
+        return query.lower() in self.id.lower()
