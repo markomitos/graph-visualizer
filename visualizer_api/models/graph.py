@@ -41,6 +41,13 @@ class Graph:
                 neighbors.append(edge.source)
         return neighbors
 
+    def get_pointing_vertexes(self, vid):
+        vertexes = []
+        for edge in self.edges:
+            if edge.source.id == vid:
+                vertexes.append(edge.target)
+        return vertexes
+
     def find(self, parent, i):
         if parent[i] == i:
             return i
@@ -102,6 +109,18 @@ class Graph:
             if vertex.id == key:
                 return vertex
         return None
+
+    def get_vertex_tree_info(self, key):
+        info = {
+            "vertex": None,
+            "connections": []
+        }
+        for vertex in self.vertices:
+            if vertex.id == key:
+                info['vertex'] = vertex.to_dict()
+        if info['vertex'] is not None:
+            info['connections'] = list(map(lambda vertex: vertex.id, self.get_pointing_vertexes(key)))
+        return info
 
     def __str__(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
