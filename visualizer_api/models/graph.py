@@ -115,3 +115,6 @@ class Graph:
 
     def to_dict(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
+
+    def ids_to_dicts(self):
+        return {"nodes": [vertex.id_to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
