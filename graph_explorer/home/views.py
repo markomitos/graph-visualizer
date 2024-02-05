@@ -16,6 +16,7 @@ def home(request):
 
     dataGraph = dataSource1.fetch_data()
     #dataGraph = dataSource2.fetch_data()
+    dataGraph = dataGraph.search("")
 
 
     context = {

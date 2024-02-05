@@ -110,6 +110,19 @@ class Graph:
         else:
             self.add_vertex(vid, {key: value})
 
+    def search(self, query):
+        result_graph = Graph()
+
+        for vertex in self.vertices:
+            if vertex.contains(query):
+                result_graph.add_vertex(vertex.id, vertex.data)
+
+        for edge in self.edges:
+            if edge.source.contains(query) and edge.target.contains(query):
+                result_graph.add_edge(edge.source.id, edge.target.id, edge.is_directed, edge.weight)
+
+        return result_graph
+
     def __str__(self):
         return {"nodes": [vertex.to_dict() for vertex in self.vertices], "links": [edge.to_dict() for edge in self.edges]}
 
