@@ -2,7 +2,7 @@ from visualizer_api.data_source_api import DataSourceBase
 from models.graph import Graph
 
 
-class AirportDataSource(DataSourceBase):
+class RdfDataSource(DataSourceBase):
 
     # def __init__(self):
     #     pass
@@ -10,12 +10,12 @@ class AirportDataSource(DataSourceBase):
         self.rdf_file = rdf_file
 
     def name(self) -> str:
-        return 'Airport Data Source'
+        return 'RDF Data Source'
 
     def fetch_data(self) -> Graph:
         graph = Graph()
         self.parse_nt_file(self.rdf_file, graph)
-        print("Print from airport_data_source")
+        print("Print from rdf_data_source")
         return graph
 
     def parse_nt_file(self, file_path: str, graph: Graph):
@@ -46,7 +46,7 @@ class AirportDataSource(DataSourceBase):
         graph.add_edge(subject, obj, is_directed, weight, predicate)
 
 if __name__ == "__main__":
-    a = AirportDataSource("C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\airport_data_source\\airport_data_source\\michael_jackson.nt")
+    a = RdfDataSource("C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt")
     graph = a.fetch_data()
     dict = graph.to_dict()
 
