@@ -23,11 +23,6 @@ class SimpleVisualiser(VisualizerBase):
                                     }
                                 </style>
                                 <div id="graph-container"></div>
-                                <defs>
-                                    <marker id="arrowhead" viewBox="0 -5 10 10" refX="10" refY="0" orient="auto" markerWidth="8" markerHeight="8">
-                                        <polygon fill="#999" points="0,-5 10,0 0,5" />
-                                    </marker>
-                                </defs>
                                 <script>
                                     const width = 928;
                                     const height = 680;
@@ -40,6 +35,18 @@ class SimpleVisualiser(VisualizerBase):
                                         .call(d3.zoom()
                                               .scaleExtent([1 / 2, 4])
                                               .on("zoom", zoomed));
+
+                                     // Add the arrowhead marker definition
+                                    svg.append("defs")
+                                        .append("marker")
+                                        .attr("id", "arrowhead")
+                                        .attr("markerWidth", 10)
+                                        .attr("markerHeight", 7)
+                                        .attr("refX", 10)
+                                        .attr("refY", 3.5)
+                                        .attr("orient", "auto")
+                                        .append("polygon")
+                                        .attr("points", "0 0, 10 3.5, 0 7");
 
                                     const container = svg.append("g");
 
@@ -58,16 +65,8 @@ class SimpleVisualiser(VisualizerBase):
                                         .force("x", d3.forceX(width / 2).strength(0.1)) // X force towards center
                                         .force("y", d3.forceY(height / 2).strength(0.1)); // Y force towards center
 
-                                    // Render the edges
-                                    const link = container.append("g")
-                                    .selectAll("line")
-                                    .data(graphData.links)
-                                    .enter().append("line")
-                                    .attr("stroke", "#999")
-                                    .attr("stroke-opacity", 0.6)
-                                    .attr("stroke-width", 2)
-                                    .attr("marker-end", "url(#arrowhead)"); // Add arrow markers to the edges
-
+                        
+                                    
                                     // Render the nodes
                                     const node = container.append("g")
                                         .selectAll("g")
@@ -78,18 +77,27 @@ class SimpleVisualiser(VisualizerBase):
                                               .on("start", dragstarted)
                                               .on("drag", dragged)
                                               .on("end", dragended));
+                                              
+                                    // Render the edges
+                                    const link = container.append("g")
+                                    .selectAll("line")
+                                    .data(graphData.links)
+                                    .enter().append("line")
+                                    .attr("stroke", "#999")
+                                    .attr("stroke-opacity", 0.6)
+                                    .attr("stroke-width", 2)
+                                    .attr("marker-end", "url(#arrowhead)"); // Add arrowhead marker
 
-                                    // Append rectangles to nodes
-                                    node.append("rect")
-                                        .attr("width", 100)  // Adjust the width of the square
-                                        .attr("height", 50)  // Adjust the height of the square
+                                     // Append circles to nodes
+                                    node.append("circle")
+                                        .attr("r", 40)  // Adjust the radius of the circle
                                         .attr("fill", "#1f77b4");
 
                                     // Append text to nodes
                                     node.append("text")
                                         .style("text-anchor", "middle")
                                         .attr("dy", "0.35em")
-                                        .text(d => JSON.stringify(d.data));  // Display name and age
+                                        .text(d => JSON.stringify(d.data));  // Display id
 
                                     // Define drag behavior functions
                                     function dragstarted(event, d) {
@@ -109,13 +117,25 @@ class SimpleVisualiser(VisualizerBase):
                                         d.fy = null;
                                     }
 
+                                    // Function to calculate the intersection point on the circle
+                                    function calculateIntersectionX(source, target) {
+                                        const angle = Math.atan2(target.y - source.y, target.x - source.x);
+                                        return source.x + (40 * Math.cos(angle));  // 40 is the radius of the circle
+                                    }
+                                
+                                    function calculateIntersectionY(source, target) {
+                                        const angle = Math.atan2(target.y - source.y, target.x - source.x);
+                                        return source.y + (40 * Math.sin(angle));  // 40 is the radius of the circle
+                                    }
+                                
                                     // Update the position of nodes and edges on each tick of the simulation
                                     simulation.nodes(graphData.nodes).on("tick", () => {
                                         node.attr("transform", d => `translate(${d.x}, ${d.y})`);
-                                        link.attr("x1", d => d.source.x)
-                                            .attr("y1", d => d.source.y)
-                                            .attr("x2", d => d.target.x)
-                                            .attr("y2", d => d.target.y);
+                                
+                                        link.attr("x1", d => calculateIntersectionX(d.source, d.target))
+                                            .attr("y1", d => calculateIntersectionY(d.source, d.target))
+                                            .attr("x2", d => calculateIntersectionX(d.target, d.source))
+                                            .attr("y2", d => calculateIntersectionY(d.target, d.source));
                                     });
 
                                     simulation.force("link").links(graphData.links);
