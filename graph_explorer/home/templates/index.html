@@ -73,7 +73,8 @@
                 listItem.appendChild(nestedUl);
             }
 
-            if (nestedUl.innerHTML === '') {
+
+            if (nestedUl.innerHTML === '' && listItem.classList.contains('list-item-plus')) {
                 var vertexId = element.textContent.trim();
                 const url = '/get_vertex_info/?vertex_id=' + encodeURIComponent(vertexId);
                 fetch(url)
@@ -84,7 +85,6 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log("Odgovor")
                         if (data.vertex !== null) {
                             for (var key in data.vertex.data) {
                                 var li = document.createElement('li');
