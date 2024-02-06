@@ -186,7 +186,6 @@
                                         var response = JSON.parse(xhr.responseText);
                                         // Rerender the graph
                                         rerenderGraph(response.visualization_html)
-                                        console.log(response.visualization_html)
                                     } else {
                                         // Handle error
                                         console.error('Request failed with status:', xhr.status);
@@ -243,15 +242,11 @@
                     function rerenderGraph(visualizationHtml) {
                         var centerDiv = document.querySelector('.center');
                         centerDiv.innerHTML = visualizationHtml;
-                        // Dynamically execute JavaScript code within visualizationHtml
                         var scriptTags = centerDiv.getElementsByTagName('script');
                         for (var i = 0; i < scriptTags.length; i++) {
                             var script = scriptTags[i].innerHTML;
                             // Using eval() to execute JavaScript code
                             eval(script);
-                            // Alternatively, you can use Function() constructor
-                            // var scriptFunc = new Function(script);
-                            // scriptFunc();
                         }
                      }
                     </script>
