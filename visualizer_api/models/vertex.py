@@ -20,3 +20,24 @@ class Vertex:
             if query.lower() in key.lower() or query.lower() in value.lower():
                 return True
         return query.lower() in self.id.lower()
+
+    def filter(self, attribute, comparator, filter_value):
+        if attribute in self.data:
+            return self.apply_filter(self.data[attribute], comparator, filter_value)
+        return False
+
+    def apply_filter(self, attribute_value, comparator, filter_value):
+        if comparator == '==':
+            return attribute_value == filter_value
+        elif comparator == '>':
+            return attribute_value > filter_value
+        elif comparator == '>=':
+            return attribute_value >= filter_value
+        elif comparator == '<':
+            return attribute_value < filter_value
+        elif comparator == '<=':
+            return attribute_value <= filter_value
+        elif comparator == '!=':
+            return attribute_value != filter_value
+        else:
+            return False
