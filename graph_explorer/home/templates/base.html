@@ -78,6 +78,7 @@
                             <option value="{{ plugin_name }}">{{ plugin_name }}</option>
                         {% endfor %}
                     </select>
+
                 </div>
 
                 <div class="search">
@@ -157,12 +158,102 @@
           </div>
           <p>left</p>
       </div>
-      <div class="center">
+      <div class="center" id="main-view">
           {{ visualization_html | safe }}
 
       </div>
       </div>
 
 </div>
+<script>
+                        document.getElementById("data-source-plugin").addEventListener("change", function () {
+                            changeDataSourcePlugin();
+                        });
+
+                        document.getElementById("visualizer-plugin").addEventListener("change", function () {
+                            changeVisualizerPlugin();
+                        });
+
+                        function changeDataSourcePlugin() {
+                            var selectedDataSource = document.getElementById("data-source-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-data-source-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                                        console.log(response.visualization_html)
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                dataSource: selectedDataSource,
+                             });
+                            xhr.send(data);
+                        }
+
+                        function changeVisualizerPlugin() {
+                            var selectedVisualizer = document.getElementById("visualizer-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-visualizer-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                visualizer: selectedVisualizer,
+                             });
+                            xhr.send(data);
+                        }
+
+                        function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = cookies[i].trim();
+                                // Check if the cookie name matches the CSRF token cookie name
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    // Extract and decode the CSRF token
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    function rerenderGraph(visualizationHtml) {
+                        var centerDiv = document.querySelector('.center');
+                        centerDiv.innerHTML = visualizationHtml;
+                        // Dynamically execute JavaScript code within visualizationHtml
+                        var scriptTags = centerDiv.getElementsByTagName('script');
+                        for (var i = 0; i < scriptTags.length; i++) {
+                            var script = scriptTags[i].innerHTML;
+                            // Using eval() to execute JavaScript code
+                            eval(script);
+                            // Alternatively, you can use Function() constructor
+                            // var scriptFunc = new Function(script);
+                            // scriptFunc();
+                        }
+                     }
+                    </script>
+
 </body>
 </html>

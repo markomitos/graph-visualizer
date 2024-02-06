@@ -24,6 +24,14 @@ class AppPlatform():
             return self.visualizer_plugins[self._current_visualizer_index]
         return None
 
+    def set_current_data_source(self, index):
+        if 0 <= index < len(self.data_source_plugins):
+            self._current_data_source_index = index
+
+    def set_current_visualizer(self, index):
+        if 0 <= index < len(self.visualizer_plugins):
+            self._current_visualizer_index = index
+
     def test(self):
         return "test"
 
