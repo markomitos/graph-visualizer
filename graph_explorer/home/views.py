@@ -5,11 +5,9 @@ from app_platform.app_platform import AppPlatform
 
 from xml_data_source.xml_data_source import Counter
 import json
-visualization_html = None
 platform = None
 # Create your views here.
 def home(request):
-    global visualization_html
     global platform
     platform = AppPlatform()
     data_source = platform.current_data_source
@@ -39,35 +37,22 @@ def home(request):
 
 
 def change_data_source_plugin(request):
-    global visualization_html
     if request.method == 'POST':
         data = json.loads(request.body)
         selected_data_source = data.get('dataSource')
-
-        # Update the current data source plugin based on the selected option
         data_source_plugins = platform.get_data_source_plugin_names()
+
         if selected_data_source in data_source_plugins:
             index = data_source_plugins.index(selected_data_source)
             platform.set_current_data_source(index)
-            print(selected_data_source)
+            data_source = platform.current_data_source
             if (selected_data_source == "RDF Data Source"):
-                data_source = platform.current_data_source
                 data_source.rdf_file = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
-                data_graph = data_source.fetch_data().search("")
-                visualization_html = platform.current_visualizer.render(data_graph)
             else:
-                data_source = platform.current_data_source
                 data_source.xml_file = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
-                data_graph = data_source.fetch_data().search("")
-                visualization_html = platform.current_visualizer.render(data_graph)
-                print("YES")
-                print(visualization_html)
 
-            # Fetch data from the newly selected data source plugin
-            # data_graph = platform.current_data_source.fetch_data().search("")
-
-            # Render the graph with the updated data
-
+            data_graph = data_source.fetch_data().search("")
+            visualization_html = platform.current_visualizer.render(data_graph)
 
             return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
         else:
