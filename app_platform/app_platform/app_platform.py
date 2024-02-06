@@ -24,6 +24,14 @@ class AppPlatform():
             return self.visualizer_plugins[self._current_visualizer_index]
         return None
 
+    def set_current_data_source(self, index):
+        if 0 <= index < len(self.data_source_plugins):
+            self._current_data_source_index = index
+
+    def set_current_visualizer(self, index):
+        if 0 <= index < len(self.visualizer_plugins):
+            self._current_visualizer_index = index
+
     def test(self):
         return "test"
 
@@ -39,6 +47,17 @@ class AppPlatform():
             plugins.append(plugin)
         return plugins
 
+    def get_data_source_plugin_names(self):
+        plugins = []
+        for plugin in self.data_source_plugins:
+            plugins.append(plugin.name())
+        return plugins
+
+    def get_visualizer_plugin_names(self):
+        plugins = []
+        for plugin in self.visualizer_plugins:
+            plugins.append(plugin.name())
+        return plugins
 
 if __name__ == "__main__":
     app = AppPlatform()
