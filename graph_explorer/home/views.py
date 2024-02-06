@@ -16,6 +16,7 @@ def home(request):
     # dataGraph = dataSource1.fetch_data()
     dataGraph = dataSource2.fetch_data()
     dataGraph = dataGraph.search("")
+    #dataGraph = dataGraph.filter_graph("<name> <>=> <Person 3>")
 
     graph = dataSource1.fetch_data()
     graph = graph.search("")

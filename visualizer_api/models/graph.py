@@ -1,5 +1,6 @@
 from models.edge import Edge
 from models.vertex import Vertex
+import re
 
 
 class Graph:
@@ -139,6 +140,28 @@ class Graph:
         for edge in self.edges:
             if edge.source.contains(query) and edge.target.contains(query):
                 result_graph.add_edge(edge.source.id, edge.target.id, edge.is_directed, edge.weight)
+
+        return result_graph
+
+
+    def filter_graph(self, filter_query):
+        result_graph = Graph()
+
+        try:
+            matches = re.findall(r'<(.+?)>', filter_query)
+
+            attribute, comparator, value = map(str.strip, matches)
+            for vertex in self.vertices:
+                if vertex.filter(attribute, comparator, value):
+                    result_graph.add_vertex(vertex.id, vertex.data)
+
+            for edge in self.edges:
+                if (edge.source.filter(attribute, comparator, value)
+                        and edge.target.filter(attribute, comparator, value)):
+                    result_graph.add_edge(edge.source.id, edge.target.id, edge.is_directed, edge.weight)
+
+        except ValueError:
+            print("Invalid filter format. Please use this format: <attribute> <comparator> <value>")
 
         return result_graph
 
