@@ -1,8 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, render
-
 from app_platform.app_platform import AppPlatform
-
 from xml_data_source.xml_data_source import Counter
 import json
 platform = None
@@ -11,6 +9,7 @@ graph = None
 #Absolute file paths
 XML_FILE = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
 RDF_FILE = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
+
 def home(request):
     global platform
     global graph
@@ -29,7 +28,6 @@ def home(request):
         "dataGraph": graph
     }
     return render(request, "index.html", context)
-
 
 def change_data_source_plugin(request):
     if request.method == 'POST':
@@ -80,3 +78,17 @@ def change_visualizer_plugin(request):
     else:
         # Return a JSON response indicating failure if request method is not POST
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def get_vertex_info(request):
+    if request.method == 'GET':
+        vertex_id = request.GET.get('vertex_id')
+        if vertex_id and graph:  # Check if graph is not None
+            info = graph.get_vertex_tree_info(vertex_id)
+            if info:
+                return JsonResponse(info)
+            else:
+                return JsonResponse({'error': 'Vertex not found'}, status=404)
+        else:
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)

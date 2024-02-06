@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
     <title>{{title}}</title>
     {% block head_sadrzaj %}{% endblock %}
+    {% block extra_css %}{% endblock %}
     <style>
     .content_graph{
     width: 100%;
@@ -48,9 +49,24 @@
 
     #applied-queries {
     padding-right: 5px;
+    }
 
+    .left {
+    margin: 0px;
+    float: left;
+    width: 30%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    border-bottom:1px black solid;
+    border-left:1px black solid;
+    border-right:1px black solid;
+    height: 100%;
+    }
 
-}
+    .content_graph{
+        height: calc(100% - 50px);
+    }
 </style>
 
 </head>
@@ -149,14 +165,10 @@
       </div>
       <div class="content_graph">
           <div class="left">
-              {{dataSource}}
-          <div id="tree-view">
-                {% block treeview %}{% endblock %}
-          </div>
+              {% block treeview %}{% endblock %}
           <div id="bird-view">
               {% block birdview %}{% endblock %}
           </div>
-          <p>left</p>
       </div>
       <div class="center" id="main-view">
           {{ visualization_html | safe }}
