@@ -149,7 +149,7 @@
       </div>
       <div class="content_graph">
           <div class="left">
-              {{dataSource1}}
+              {{dataSource}}
           <div id="tree-view">
                 {% block treeview %}{% endblock %}
           </div>
@@ -210,6 +210,7 @@
                                     if (xhr.status === 200) {
                                         var response = JSON.parse(xhr.responseText);
                                         // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
                                     } else {
                                         // Handle error
                                         console.error('Request failed with status:', xhr.status);
