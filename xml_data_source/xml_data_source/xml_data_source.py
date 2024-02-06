@@ -18,6 +18,7 @@ class XMLDataSource(DataSourceBase):
         return 'XML Data Source'
 
     def fetch_data(self) -> Graph:
+        self.counter = Counter()
         graph = Graph()
         tree = ET.parse(self.xml_file)
         root = tree.getroot()
@@ -51,7 +52,11 @@ class XMLDataSource(DataSourceBase):
             self.counter.increment(element.tag)
 
             node_id = f"{element.tag}_{self.counter[element.tag]}"
-            graph.add_vertex(node_id, node_attributes)
+            vertex = graph.get_vertex(node_id)
+            if vertex is not None:
+                vertex.data = node_attributes
+            else:
+                graph.add_vertex(node_id, node_attributes)
 
             # Recursively process child elements
             for child in element:
@@ -90,4 +95,3 @@ if __name__ == "__main__":
     print("Node Attributes:")
     for node in graph.nodes(data=True):
         print(node)
-

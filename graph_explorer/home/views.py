@@ -7,13 +7,14 @@ platform = None
 graph = None
 
 #Absolute file paths
-XML_FILE = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
-RDF_FILE = "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
+XML_FILE = "C:\\Programiranje\\Django\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
+RDF_FILE = "C:\\Programiranje\\Django\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
 
 def home(request):
     global platform
     global graph
     platform = AppPlatform()
+    platform.set_current_data_source(1)
     data_source = platform.current_data_source
     data_source.xml_file = XML_FILE
     graph = data_source.fetch_data().search("")
@@ -28,6 +29,7 @@ def home(request):
         "dataGraph": graph
     }
     return render(request, "index.html", context)
+
 
 def change_data_source_plugin(request):
     if request.method == 'POST':
