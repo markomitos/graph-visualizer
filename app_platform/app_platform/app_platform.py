@@ -13,6 +13,7 @@ class AppPlatform():
         self.data_source_plugins = self.load_plugins("data_sources")
         self.visualizer_plugins = self.load_plugins("visualizers")
         self.current_data_source.filepath = PlatformConfig.data_filepaths[self.current_data_source.name()]
+        self.load_graph()
 
     @property
     def current_data_source(self):
@@ -33,14 +34,24 @@ class AppPlatform():
             if data_source.name() == name:
                 PlatformConfig.data_source = name
                 self.current_data_source.filepath = PlatformConfig.data_filepaths[self.current_data_source.name()]
+                self.load_graph()
 
     def set_current_visualizer(self, name):
         for visualizer in self.visualizer_plugins:
             if visualizer.name() == name:
                 PlatformConfig.visualizer = name
 
-    def get_tree_view(self, graph : Graph) -> [str, str]:
-        return generate_tree_view(graph)
+    def load_graph(self):
+        PlatformConfig.current_graph = self.current_data_source.fetch_data()
+
+    def get_main_view(self):
+        return self.current_visualizer.render(PlatformConfig.current_graph)
+
+    def get_tree_view(self) -> [str, str]:
+        return generate_tree_view(PlatformConfig.current_graph)
+
+    def get_vertex_tree_info(self, vertex_id):
+        return PlatformConfig.current_graph.get_vertex_tree_info(vertex_id)
 
     def load_plugins(self, group_name: str) -> list[Union[DataSourceBase, VisualizerBase]]:
         plugins = []

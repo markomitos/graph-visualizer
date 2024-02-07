@@ -69,7 +69,6 @@ def generate_tree_view(dataGraph: Graph):
     tree_view_section += """
     <script>
         function loadVertexInfo(element) {
-            console.log("Ulaz")
 
             var listItem = element.closest('li'); // Find the closest parent li element
             var nestedUl = listItem.querySelector('.nested-ul');
@@ -93,7 +92,7 @@ def generate_tree_view(dataGraph: Graph):
                         return response.json();
                     })
                     .then(data => {
-                        if (data.vertex !== null) {
+                         if (data.vertex !== null) {
                             for (var key in data.vertex.data) {
                                 var li = document.createElement('li');
                                 li.textContent = key + ': ' + data.vertex.data[key];

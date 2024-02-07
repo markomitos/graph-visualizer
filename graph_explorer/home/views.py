@@ -3,26 +3,21 @@ from django.shortcuts import HttpResponse, render
 from app_platform.app_platform import AppPlatform
 from xml_data_source.xml_data_source import Counter
 import json
-platform = None
-graph = None
+
+platform: AppPlatform = None
 
 
 def home(request):
     global platform
-    global graph
     platform = AppPlatform()
-    data_source = platform.current_data_source
-    graph = data_source.fetch_data().search("")
-    visualization_html = platform.current_visualizer.render(graph)
-    tree_view_style, tree_view_html = platform.get_tree_view(graph)
+    visualization_html = platform.get_main_view()
+    tree_view_style, tree_view_html = platform.get_tree_view()
 
     context = {
         "title": "Graph Visualizer",
-        # "graph_data": graph_data,  # Pass the serialized graph data to the template
         "visualization_html": visualization_html,
         "data_source_plugin_names": platform.get_data_source_plugin_names(),
         "visualizer_plugin_names": platform.get_visualizer_plugin_names(),
-        "dataGraph": graph,
         "currentDataSource": platform.current_data_source.name(),
         "currentVisualizer": platform.current_visualizer.name(),
         "tree_view_style": tree_view_style,
@@ -76,8 +71,8 @@ def change_visualizer_plugin(request):
 def get_vertex_info(request):
     if request.method == 'GET':
         vertex_id = request.GET.get('vertex_id')
-        if vertex_id and graph:  # Check if graph is not None
-            info = graph.get_vertex_tree_info(vertex_id)
+        if vertex_id:
+            info = platform.get_vertex_tree_info(vertex_id)
             if info:
                 return JsonResponse(info)
             else:
