@@ -7,9 +7,8 @@ from models.graph import Graph
 
 class XMLDataSource(DataSourceBase):
 
-    def __init__(self, xml_file):
-        self.xml_file = xml_file
-        self.counter = Counter()
+    def __init__(self, filepath):
+        super().__init__(filepath)
 
     # def __init__(self):
     #     pass
@@ -20,7 +19,7 @@ class XMLDataSource(DataSourceBase):
     def fetch_data(self) -> Graph:
         self.counter = Counter()
         graph = Graph()
-        tree = ET.parse(self.xml_file)
+        tree = ET.parse(self.filepath)
         root = tree.getroot()
 
         self.construct_graph(graph, root)

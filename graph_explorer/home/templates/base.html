@@ -262,6 +262,37 @@
                         }
                      }
                     </script>
+<script>
+    var selectedValue = "{{currentDataSource}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("data-source-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedValue = "{{currentVisualizer}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("visualizer-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
 
 </body>
 </html>

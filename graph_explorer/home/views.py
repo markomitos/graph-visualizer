@@ -6,17 +6,12 @@ import json
 platform = None
 graph = None
 
-#Absolute file paths
-XML_FILE = "C:\\Programiranje\\Django\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml"
-RDF_FILE = "C:\\Programiranje\\Django\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt"
 
 def home(request):
     global platform
     global graph
     platform = AppPlatform()
-    platform.set_current_data_source(1)
     data_source = platform.current_data_source
-    data_source.xml_file = XML_FILE
     graph = data_source.fetch_data().search("")
     visualization_html = platform.current_visualizer.render(graph)
 
@@ -26,7 +21,9 @@ def home(request):
         "visualization_html": visualization_html,
         "data_source_plugin_names": platform.get_data_source_plugin_names(),
         "visualizer_plugin_names": platform.get_visualizer_plugin_names(),
-        "dataGraph": graph
+        "dataGraph": graph,
+        "currentDataSource": platform.current_data_source.name(),
+        "currentVisualizer": platform.current_visualizer.name()
     }
     return render(request, "index.html", context)
 
@@ -38,14 +35,8 @@ def change_data_source_plugin(request):
         data_source_plugins = platform.get_data_source_plugin_names()
 
         if selected_data_source in data_source_plugins:
-            index = data_source_plugins.index(selected_data_source)
-            platform.set_current_data_source(index)
+            platform.set_current_data_source(selected_data_source)
             data_source = platform.current_data_source
-
-            if (selected_data_source == "RDF Data Source"):
-                data_source.rdf_file = RDF_FILE
-            else:
-                data_source.xml_file = XML_FILE
 
             data_graph = data_source.fetch_data()
             visualization_html = platform.current_visualizer.render(data_graph)
@@ -66,8 +57,7 @@ def change_visualizer_plugin(request):
         # Update the current data source plugin based on the selected option
         visualizer_plugins = platform.get_visualizer_plugin_names()
         if selected_visualizer in visualizer_plugins:
-            index = visualizer_plugins.index(selected_visualizer)
-            platform.set_current_visualizer(index)
+            platform.set_current_visualizer(selected_visualizer)
 
             data_source = platform.current_data_source
             data_graph = data_source.fetch_data()
