@@ -6,15 +6,15 @@ class RdfDataSource(DataSourceBase):
 
     # def __init__(self):
     #     pass
-    def __init__(self, rdf_file: str):
-        self.rdf_file = rdf_file
+    def __init__(self, filepath: str):
+        super().__init__(filepath)
 
     def name(self) -> str:
         return 'RDF Data Source'
 
     def fetch_data(self) -> Graph:
         graph = Graph()
-        self.parse_nt_file(self.rdf_file, graph)
+        self.parse_nt_file(self.filepath, graph)
         print("Print from rdf_data_source")
         return graph
 
