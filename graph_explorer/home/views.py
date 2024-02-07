@@ -14,6 +14,7 @@ def home(request):
     data_source = platform.current_data_source
     graph = data_source.fetch_data().search("")
     visualization_html = platform.current_visualizer.render(graph)
+    tree_view_style, tree_view_html = platform.get_tree_view(graph)
 
     context = {
         "title": "Graph Visualizer",
@@ -23,10 +24,11 @@ def home(request):
         "visualizer_plugin_names": platform.get_visualizer_plugin_names(),
         "dataGraph": graph,
         "currentDataSource": platform.current_data_source.name(),
-        "currentVisualizer": platform.current_visualizer.name()
+        "currentVisualizer": platform.current_visualizer.name(),
+        "tree_view_style": tree_view_style,
+        "tree_view_html": tree_view_html
     }
     return render(request, "index.html", context)
-
 
 def change_data_source_plugin(request):
     if request.method == 'POST':

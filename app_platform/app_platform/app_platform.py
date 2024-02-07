@@ -4,6 +4,7 @@ from typing import Union
 from visualizer_api.data_source_api import DataSourceBase
 from visualizer_api.visualizer_api import VisualizerBase
 from app_platform.app_config import PlatformConfig
+from app_platform.tree_view import *
 
 
 class AppPlatform():
@@ -38,8 +39,8 @@ class AppPlatform():
             if visualizer.name() == name:
                 PlatformConfig.visualizer = name
 
-    def test(self):
-        return "test"
+    def get_tree_view(self, graph : Graph) -> [str, str]:
+        return generate_tree_view(graph)
 
     def load_plugins(self, group_name: str) -> list[Union[DataSourceBase, VisualizerBase]]:
         plugins = []
