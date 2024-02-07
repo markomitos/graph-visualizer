@@ -53,6 +53,12 @@ class AppPlatform():
     def get_vertex_tree_info(self, vertex_id):
         return PlatformConfig.current_graph.get_vertex_tree_info(vertex_id)
 
+    def search(self, search_input: str):
+        PlatformConfig.current_graph = PlatformConfig.current_graph.search(search_input)
+
+    def reset_graph(self):
+        self.set_current_data_source(PlatformConfig.data_source)
+
     def load_plugins(self, group_name: str) -> list[Union[DataSourceBase, VisualizerBase]]:
         plugins = []
         for ep in pkg_resources.iter_entry_points(group=group_name):

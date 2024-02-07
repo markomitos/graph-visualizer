@@ -81,3 +81,22 @@ def get_vertex_info(request):
             return JsonResponse({'error': 'Invalid request'}, status=400)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def search(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        platform.search(data.get('searchInput'))
+        visualization_html = platform.get_main_view()
+        return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+def reset(request):
+    if request.method == 'POST':
+        platform.reset_graph()
+        visualization_html = platform.get_main_view()
+        return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
