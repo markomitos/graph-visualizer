@@ -65,18 +65,40 @@ class BlockVisualiser(VisualizerBase):
                                       .on("drag", dragged)
                                       .on("end", dragended));
 
-                            // Append rectangles to nodes
                             node.append("rect")
-                                .attr("width", 100)  // Adjust the width of the square
-                                .attr("height", 50)  // Adjust the height of the square
+                                .attr("width", 200)  // Adjust the width of the rectangle
+                                .attr("height", function(d) {
+                                    // Calculate the height based on the number of attributes
+                                    const attributesCount = Object.keys(d.data).length;
+                                    return 50 + attributesCount * 25;  // Assuming each attribute has a height of 50 units
+                                })
                                 .attr("fill", "#1f77b4");
-
+                            node.append("rect")
+                                .attr("width", 200)  // Adjust the width of the rectangle
+                                .attr("height", 50)
+                                .attr("fill", "#75d1f0");
+                            // Append text to nodes
+                            node.append("text").
+                                attr("y", "25").
+                                attr("x", "5").
+                                text(d => "# "+d.id);    
                             // Append text to nodes
                             node.append("text")
-                                .style("text-anchor", "middle")
-                                .attr("dy", "0.35em")
-                                .text(d => JSON.stringify(d.data));  // Display name and age
-
+                                .attr("y", "50")
+                                .each(function(d) {
+                                    const textElement = d3.select(this);
+                                    
+                                    // Convert JSON object to an array of key-value pairs
+                                    const attributes = Object.entries(d.data);
+                                    
+                                    // Append a <tspan> for each attribute
+                                    attributes.forEach((attr, i) => {
+                                        textElement.append("tspan")
+                                            .attr("x", 5)
+                                            .attr("dy", 1.2 + "em") // Adjust the spacing between lines as needed
+                                            .text(`+ ${attr[0]}: ${attr[1]}`);
+                                    });
+                                });
                             // Define drag behavior functions
                             function dragstarted(event, d) {
                                 if (!event.active) simulation.alphaTarget(0.3).restart();

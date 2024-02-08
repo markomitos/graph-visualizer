@@ -223,7 +223,23 @@
             const g = d3.select("#center-graph-g");
             const birdSVG = d3.select("#bird-graph-svg");
             const rect = d3.select("#bird-view-scope");
+            // Get all <g> tags with class "node"
+            const nodes = document.querySelectorAll('g.node');
 
+            // Add click event listener to each node
+            nodes.forEach(node => {
+                node.addEventListener('click', function() {
+                    // Reset the color of all nodes' second rects to #1f77b4
+                    nodes.forEach(n => {
+                        const secondRect = n.querySelectorAll('rect')[1];
+                        secondRect.setAttribute('fill', '#75d1f0');
+                    });
+
+                    // Change the color of the clicked node's second rect to red
+                    const secondRect = this.querySelectorAll('rect')[1];
+                    secondRect.setAttribute('fill', 'red');
+                });
+            });
             svg.append("defs")
                 .append("marker")
                 .attr("id", "arrowhead")
