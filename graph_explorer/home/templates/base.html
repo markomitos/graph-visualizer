@@ -376,7 +376,6 @@
                             var xhr = new XMLHttpRequest();
                             xhr.open("POST", "/change-data-source-plugin/", true);
                             xhr.setRequestHeader("Content-Type", "application/json");
-                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                             xhr.onreadystatechange = function () {
                                 if (xhr.readyState === XMLHttpRequest.DONE) {
                                     if (xhr.status === 200) {
@@ -400,7 +399,6 @@
                             var xhr = new XMLHttpRequest();
                             xhr.open("POST", "/change-visualizer-plugin/", true);
                             xhr.setRequestHeader("Content-Type", "application/json");
-                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                             xhr.onreadystatechange = function () {
                                 if (xhr.readyState === XMLHttpRequest.DONE) {
                                     if (xhr.status === 200) {
@@ -418,23 +416,6 @@
                              });
                             xhr.send(data);
                         }
-
-                        function getCookie(name) {
-                        var cookieValue = null;
-                        if (document.cookie && document.cookie !== '') {
-                            var cookies = document.cookie.split(';');
-                            for (var i = 0; i < cookies.length; i++) {
-                                var cookie = cookies[i].trim();
-                                // Check if the cookie name matches the CSRF token cookie name
-                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                    // Extract and decode the CSRF token
-                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                    break;
-                                }
-                            }
-                        }
-                        return cookieValue;
-                    }
 
                     function rerenderGraph(visualizationHtml) {
                         location.reload()
@@ -496,7 +477,6 @@
          var xhr = new XMLHttpRequest();
          xhr.open("POST", "/search/", true);
          xhr.setRequestHeader("Content-Type", "application/json");
-         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
          xhr.onreadystatechange = function () {
              if (xhr.readyState === XMLHttpRequest.DONE) {
                  if (xhr.status === 200) {
@@ -527,7 +507,6 @@
          var xhr = new XMLHttpRequest();
          xhr.open("POST", "/create_workspace/", true);
          xhr.setRequestHeader("Content-Type", "application/json");
-         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
          xhr.onreadystatechange = function () {
              if (xhr.readyState === XMLHttpRequest.DONE) {
                  if (xhr.status === 200) {
@@ -552,7 +531,6 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/switch_workspace/", true);
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
         xhr.onreadystatechange = function () {
              if (xhr.readyState === XMLHttpRequest.DONE) {
                  if (xhr.status === 200) {
@@ -576,7 +554,6 @@
          var xhr = new XMLHttpRequest();
          xhr.open("POST", "/reset/", true);
          xhr.setRequestHeader("Content-Type", "application/json");
-         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
          xhr.onreadystatechange = function () {
              if (xhr.readyState === XMLHttpRequest.DONE) {
                  if (xhr.status === 200) {
