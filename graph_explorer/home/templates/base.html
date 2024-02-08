@@ -31,7 +31,7 @@
         border-color: slateblue;
     }
     #bird-view{
-        width: 100%;
+        width: 99%;
         height: 200px;
         border: black solid 1px;
     }
@@ -61,25 +61,27 @@
         height: 100%;
         overflow: hidden;
     }
-    .tree-view-container {
-        height: 60%;
-        overflow: auto;
-    }
+
     .left {
     margin: 0px;
     float: left;
     width: 30%;
-    overflow: auto;
     display: flex;
     flex-direction: column;
     border-bottom:1px black solid;
     border-left:1px black solid;
     border-right:1px black solid;
-    height: 100%;
+    height: calc(100vh - 200px);
     }
 
     .content_graph{
         height: calc(100% - 50px);
+    }
+
+    .tree-view-container {
+        height: 60%;
+        overflow: auto;
+        flex: 1;
     }
 
 </style>
@@ -191,9 +193,9 @@
       </div>
       <div class="content_graph">
           <div class="left">
-            <div class="tree-view-container">
-              {% block treeview %}{% endblock %}
-            </div>
+              <div class="tree-view-container">
+                  {% block treeview %}{% endblock %}
+              </div>
           <div id="bird-view">
               <svg id="bird-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                   <g id="bird-graph-g" transform="translate(271.5788644740471,88.54958197403138) scale(0.3)">
