@@ -121,3 +121,24 @@ def switch_workspace(request):
         return JsonResponse({'status': 'success', 'workspace_name': workspace_name})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def add_filter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        filter = data.get('filter')
+        print("added: " + filter)
+        return JsonResponse({'status': 'success', 'filter': filter})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def remove_filter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        filter = data.get('filter')
+        print("removed: " + filter)
+        return JsonResponse({'status': 'success', 'filter': filter})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
