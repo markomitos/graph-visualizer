@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse, render
 from app_platform.app_platform import AppPlatform
+from django.views.decorators.csrf import csrf_exempt
 from xml_data_source.xml_data_source import Counter
 import json
 
@@ -26,6 +27,7 @@ def home(request):
     }
     return render(request, "index.html", context)
 
+@csrf_exempt
 def change_data_source_plugin(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -45,6 +47,7 @@ def change_data_source_plugin(request):
         # Return a JSON response indicating failure if request method is not POST
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+@csrf_exempt
 def change_visualizer_plugin(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -80,6 +83,7 @@ def get_vertex_info(request):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
+@csrf_exempt
 def search(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -89,7 +93,7 @@ def search(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-
+@csrf_exempt
 def reset(request):
     if request.method == 'POST':
         platform.reset_graph()
@@ -98,6 +102,7 @@ def reset(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+@csrf_exempt
 def create_workspace(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -107,6 +112,7 @@ def create_workspace(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+@csrf_exempt
 def switch_workspace(request):
     if request.method == 'POST':
         data = json.loads(request.body)
