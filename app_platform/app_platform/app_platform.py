@@ -1,11 +1,18 @@
 import pkg_resources
-from typing import Union
+from typing import Union, List
 
 from visualizer_api.data_source_api import DataSourceBase
 from visualizer_api.visualizer_api import VisualizerBase
 from app_platform.app_config import PlatformConfig
 from app_platform.tree_view import *
 
+
+class Workspace:
+    def __init__(self, name: str):
+        self.name = name
+        self.data_source = None
+        self.visualizer = None
+        self.graph = None
 
 class AppPlatform():
 
@@ -14,6 +21,47 @@ class AppPlatform():
         self.visualizer_plugins = self.load_plugins("visualizers")
         self.current_data_source.filepath = PlatformConfig.data_filepaths[self.current_data_source.name()]
         self.load_graph()
+        self.workspaces: List[Workspace] = []
+
+    def create_workspace(self, name: str, visualizer_plugin, data_source_plugin, graph):
+        if name not in [ws.name for ws in self.workspaces]:
+            workspace = Workspace(name)
+            workspace.visualizer = visualizer_plugin
+            workspace.data_source = data_source_plugin
+            workspace.graph = graph
+            self.workspaces.append(workspace)
+
+    def set_workspace(self, name):
+        for workspace in self.workspaces:
+            if workspace.name == name:
+                PlatformConfig.workspace = name
+
+    def current_workspace(self):
+        for workspace in self.workspaces:
+            if workspace.name == PlatformConfig.workspace:
+                return workspace
+        return None
+
+    def get_workspaces(self):
+        workspace_names = [workspace.name for workspace in self.workspaces]
+        return workspace_names
+
+    def get_workspace(self, name):
+        for workspace in self.workspaces:
+            if workspace.name == name:
+                return workspace
+        return None
+
+    def update_current_workspace(self, visualizer_plugin, data_source_plugin, graph):
+        current_workspace = self.current_workspace()
+        if current_workspace:
+            # Update attributes of the current workspace
+            current_workspace.visualizer = visualizer_plugin
+            current_workspace.data_source = data_source_plugin
+            current_workspace.graph = graph
+            return True
+        else:
+            return False
 
     @property
     def current_data_source(self):
