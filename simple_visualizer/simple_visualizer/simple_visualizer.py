@@ -15,45 +15,13 @@ class SimpleVisualiser(VisualizerBase):
     def render(self, data: Graph) -> str:
         html = """
                                 <script src="https://d3js.org/d3.v7.min.js"></script>
-                                <style>
-                                    #graph-container {
-                                        width: 100%;
-                                        height: 100%;
-                                        overflow: hidden;
-                                    }
-                                </style>
-                                <div id="graph-container"></div>
+                                <script src="https://d3js.org/d3-force.v3.min.js"></script>
                                 <script>
                                     const width = 928;
                                     const height = 680;
 
-                                    // Create the SVG element
-                                    const svg = d3.select("#graph-container")
-                                        .append("svg")
-                                        .attr("viewBox", `0 0 ${width} ${height}`)
-                                        .style("height", "100%")
-                                        .call(d3.zoom()
-                                              .scaleExtent([1 / 2, 4])
-                                              .on("zoom", zoomed));
 
-                                     // Add the arrowhead marker definition
-                                    svg.append("defs")
-                                        .append("marker")
-                                        .attr("id", "arrowhead")
-                                        .attr("markerWidth", 10)
-                                        .attr("markerHeight", 7)
-                                        .attr("refX", 10)
-                                        .attr("refY", 3.5)
-                                        .attr("orient", "auto")
-                                        .append("polygon")
-                                        .attr("points", "0 0, 10 3.5, 0 7")
-                                        .attr("fill", "gray")
-
-                                    const container = svg.append("g");
-
-                                    function zoomed(event) {
-                                        container.attr("transform", event.transform);
-                                    }
+                                    const container = d3.select("#center-graph-g");
 
                                     // Create the data for the graph
                                     const graphData = """ + json.dumps(data.ids_to_dicts()) + """;
@@ -75,7 +43,7 @@ class SimpleVisualiser(VisualizerBase):
                                     .attr("stroke-opacity", 0.6)
                                     .attr("stroke-width", 2)
                                     .attr("marker-end", "url(#arrowhead)"); // Add arrowhead marker
-                                    
+
                                     // Render the nodes
                                     const node = container.append("g")
                                         .selectAll("g")
@@ -121,16 +89,16 @@ class SimpleVisualiser(VisualizerBase):
                                         const angle = Math.atan2(target.y - source.y, target.x - source.x);
                                         return source.x + (40 * Math.cos(angle));  // 40 is the radius of the circle
                                     }
-                                
+
                                     function calculateIntersectionY(source, target) {
                                         const angle = Math.atan2(target.y - source.y, target.x - source.x);
                                         return source.y + (40 * Math.sin(angle));  // 40 is the radius of the circle
                                     }
-                                
+
                                     // Update the position of nodes and edges on each tick of the simulation
                                     simulation.nodes(graphData.nodes).on("tick", () => {
                                         node.attr("transform", d => `translate(${d.x}, ${d.y})`);
-                                
+
                                         link.attr("x1", d => calculateIntersectionX(d.source, d.target))
                                             .attr("y1", d => calculateIntersectionY(d.source, d.target))
                                             .attr("x2", d => calculateIntersectionX(d.target, d.source))

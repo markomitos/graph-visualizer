@@ -51,7 +51,8 @@ class BlockVisualiser(VisualizerBase):
                                 .enter().append("line")
                                 .attr("stroke", "#999")
                                 .attr("stroke-opacity", 0.6)
-                                .attr("stroke-width", 2);
+                                .attr("stroke-width", 2)
+                                .attr("marker-end", "url(#arrowhead)"); 
 
                             // Render the nodes
                             const node = container.append("g")
