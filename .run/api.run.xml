@@ -8,13 +8,13 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="SDK_NAME" value="Python 3.10 (graph-visualizer)" />
-    <option name="WORKING_DIRECTORY" value="O:\Fakultet\III_GODINA\V_SEMESTAR\Softverski obrasci i komponente\Projekat\graph-visualizer\api" />
+    <option name="SDK_NAME" value="Python 3.12 (graph-visualizer)" />
+    <option name="WORKING_DIRECTORY" value="C:\Programiranje\Django\graph-visualizer\visualizer_api" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="false" />
     <option name="ADD_SOURCE_ROOTS" value="false" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/api/setup.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizer_api/setup.py" />
     <option name="PARAMETERS" value="install" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />

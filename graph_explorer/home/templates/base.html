@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}"/>
     <title>{{title}}</title>
     {% block head_sadrzaj %}{% endblock %}
-
+    {% block extra_css %}{% endblock %}
     <style>
     .content_graph{
     width: 100%;
@@ -54,11 +54,29 @@
 
     #applied-queries {
     padding-right: 5px;
+    }
 
     #graph-container {
         width: 100%;
         height: 100%;
         overflow: hidden;
+    }
+
+    .left {
+    margin: 0px;
+    float: left;
+    width: 30%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    border-bottom:1px black solid;
+    border-left:1px black solid;
+    border-right:1px black solid;
+    height: 100%;
+    }
+
+    .content_graph{
+        height: calc(100% - 50px);
     }
 }
 </style>
@@ -74,14 +92,36 @@
 
           <div class="right-header">
 
+              <div class="workspace-management">
+                <button id="createWorkspaceBtn" onclick="createWorkspace()">Create Workspace</button>
+                <select id="workspace-select">
+                    {% for workspace in workspaces %}
+                        <option value="{{ forloop.counter0 }}">{{ workspace.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <div class="top-right">
                 <div class="plugins">
-                    <label for="data-source-plugin">Data source plugin</label><select class="plugin-select" id="data-source-plugin"></select>
-                    <label for="visualizer-plugin">Visualizer plugin</label><select class="plugin-select" id="visualizer-plugin"></select>
+                    <label for="data-source-plugin">Data source plugin</label>
+                    <select class="plugin-select" id="data-source-plugin">
+                        {% for plugin_name in data_source_plugin_names %}
+                            <option value="{{ plugin_name }}">{{ plugin_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="visualizer-plugin">Visualizer plugin</label>
+                    <select class="plugin-select" id="visualizer-plugin">
+                        {% for plugin_name in visualizer_plugin_names %}
+                            <option value="{{ plugin_name }}">{{ plugin_name }}</option>
+                        {% endfor %}
+                    </select>
+
                 </div>
 
                 <div class="search">
                     <label for="search">Search: </label><input id="search">
+                    <button id="search-button" onclick="searchButtonClicked()"> Search </button>
+                    <button id="reset-button" onclick="resetButtonClicked()"> Reset </button>
                 </div>
             </div>
 
@@ -148,9 +188,7 @@
       </div>
       <div class="content_graph">
           <div class="left">
-          <div id="tree-view">
-                {% block treeview %}{% endblock %}
-          </div>
+              {% block treeview %}{% endblock %}
           <div id="bird-view">
               <svg id="bird-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                   <g id="bird-graph-g" transform="translate(271.5788644740471,88.54958197403138) scale(0.3)">
@@ -164,7 +202,7 @@
           </script>
           <p>left</p>
       </div>
-      <div class="center">
+      <div class="center" id="main-view">
           <div id="graph-container">
               <svg id="center-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                   <g id="center-graph-g" >
@@ -288,5 +326,238 @@
     });
     </script>
 </div>
+<script>
+                        document.getElementById("data-source-plugin").addEventListener("change", function () {
+                            changeDataSourcePlugin();
+                        });
+
+                        document.getElementById("visualizer-plugin").addEventListener("change", function () {
+                            changeVisualizerPlugin();
+                        });
+
+                        function changeDataSourcePlugin() {
+                            var selectedDataSource = document.getElementById("data-source-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-data-source-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                dataSource: selectedDataSource,
+                             });
+                            xhr.send(data);
+                        }
+
+                        function changeVisualizerPlugin() {
+                            var selectedVisualizer = document.getElementById("visualizer-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-visualizer-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                             xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                visualizer: selectedVisualizer,
+                             });
+                            xhr.send(data);
+                        }
+
+                        function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = cookies[i].trim();
+                                // Check if the cookie name matches the CSRF token cookie name
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    // Extract and decode the CSRF token
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    function rerenderGraph(visualizationHtml) {
+                        location.reload()
+                     }
+                    </script>
+<script>
+    var selectedValue = "{{currentDataSource}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("data-source-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedValue = "{{currentVisualizer}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("visualizer-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedWorkspaceName = "{{ currentWorkspace }}";  // Get the name of the current workspace from the template
+
+        var workspaceSelectElement = document.getElementById("workspace-select");
+
+        // Loop through the options of the workspace select element
+        for (var i = 0; i < workspaceSelectElement.options.length; i++) {
+            var option = workspaceSelectElement.options[i];
+
+            // Compare the textContent of the option with the selectedWorkspaceName
+            if (option.textContent.trim() === selectedWorkspaceName.trim()) {
+                // Set the selectedIndex of the workspace select element to match the found option
+                workspaceSelectElement.selectedIndex = i;
+                break;
+            }
+        }
+</script>
+
+<script>
+    function searchButtonClicked(){
+         var searchInput = document.getElementById("search").value;
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/search/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            searchInput: searchInput,
+        });
+        xhr.send(data);
+
+    }
+</script>
+
+<script>
+    document.getElementById("workspace-select").addEventListener("change", function () {
+        switchWorkspace();
+    });
+
+    function createWorkspace() {
+        var workspaceName = prompt('Enter workspace name: ');
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/create_workspace/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
+    }
+
+    function switchWorkspace() {
+        var selectElement = document.getElementById("workspace-select");
+        var workspaceName = selectElement.options[selectElement.selectedIndex].textContent;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/switch_workspace/", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+        xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
+    }
+</script>
+
+<script>
+    function resetButtonClicked(){
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/reset/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        xhr.send();
+
+    }
+</script>
+
+
 </body>
 </html>

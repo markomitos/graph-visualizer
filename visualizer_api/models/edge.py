@@ -1,14 +1,16 @@
 class Edge:
-    def __init__(self, source, target, is_directed=False, weight=1):
+    def __init__(self, source, target, is_directed=False, weight=1, value=None):
         self.source = source
         self.target = target
         self.is_directed = is_directed
         self.weight = weight
+        self.value = value
 
     def __str__(self):
         return {
             "source": self.source.id,
-            "target": self.target.id
+            "target": self.target.id,
+            "value": self.value
         }
 
     def is_adjacent(self, vertex):
@@ -22,5 +24,6 @@ class Edge:
     def to_dict(self):
         return {
             "source": self.source.id,
-            "target": self.target.id
+            "target": self.target.id,
+            "value": self.value
         }

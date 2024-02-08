@@ -8,7 +8,7 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="O:\Fakultet\III_GODINA\V_SEMESTAR\Softverski obrasci i komponente\Projekat\graph-visualizer\app_platform" />
+    <option name="WORKING_DIRECTORY" value="C:\Programiranje\Django\graph-visualizer\app_platform" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="false" />
     <option name="ADD_SOURCE_ROOTS" value="false" />

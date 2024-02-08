@@ -18,12 +18,12 @@ run_server() {
 
 
 # build components
-lay_egs ./api
+lay_egs ./visualizer_api
 lay_egs ./app_platform
 lay_egs ./simple_visualizer
 lay_egs ./block_visualizer
 lay_egs ./xml_data_source
-lay_egs ./airport_data_source
+lay_egs ./rdf_data_source
 
 
 

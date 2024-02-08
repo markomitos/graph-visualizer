@@ -8,15 +8,16 @@ remove_eggs() {
   rm -rf *.egg-info
   rm -rf dist
   cd ..
+  pip uninstall -y "$1"
 }
 
 # remove build files from components
-remove_eggs api
+remove_eggs visualizer_api
 remove_eggs app_platform
 remove_eggs block_visualizer
 remove_eggs simple_visualizer
 remove_eggs xml_data_source
-remove_eggs airport_data_source
+remove_eggs rdf_data_source
 
 # remove db
 cd graph_explorer || exit
