@@ -212,7 +212,7 @@
           <div id="graph-container">
               <svg id="center-graph-svg" viewBox="0 0 928 680" style="width: 100%;" preserveAspectRatio="xMidYMid meet">
                   <g id="center-graph-g" >
-                    <rect id="bird-view-scope" width="" height=""></rect>
+                    <rect id="bird-view-scope" width="0" height="0"></rect>
 
                   </g>
               </svg>
@@ -231,12 +231,24 @@
                 node.addEventListener('click', function() {
                     // Reset the color of all nodes' second rects to #1f77b4
                     nodes.forEach(n => {
-                        const secondRect = n.querySelectorAll('rect')[1];
-                        secondRect.setAttribute('fill', '#75d1f0');
+                        let secondRect = n.querySelectorAll('rect')[1];
+                        if(secondRect === undefined){
+                            secondRect = n.querySelectorAll('circle')[0];
+                            secondRect.setAttribute('fill', '#1f77b4');
+
+                        }else{
+                            secondRect.setAttribute('fill', '#75d1f0');
+
+                        }
+
+
                     });
 
                     // Change the color of the clicked node's second rect to red
-                    const secondRect = this.querySelectorAll('rect')[1];
+                    let secondRect = this.querySelectorAll('rect')[1];
+                    if(secondRect === undefined){
+                            secondRect = this.querySelectorAll('circle')[0];
+                    }
                     secondRect.setAttribute('fill', 'red');
                 });
             });
@@ -322,11 +334,6 @@
 
                     const transformAttr = node.getAttribute('transform');
                     const [translateX, translateY] = transformAttr.match(/translate\(([^,]+),([^)]+)\)/).slice(1).map(Number);
-                    const rectElement = node.querySelector('rect');
-
-
-                    const width = parseFloat(rectElement.getAttribute('width'));
-                    const height = parseFloat(rectElement.getAttribute('height'));
 
                     const gElement = document.getElementById('bird-graph-g');
 
@@ -336,8 +343,6 @@
 
                     const topLeft = { x: (nodeTranslateX + translateX) * scale, y: (nodeTranslateY + translateY) * scale };
 
-                    const bottomRight = { x: (nodeTranslateX + translateX + width) * scale, y: (nodeTranslateY + translateY + height) * scale };
-
                     if (topLeft.x < viewBoxValues[0]) {
                         let distance = Math.abs(topLeft.x - viewBoxValues[0])
                         svg.setAttribute('viewBox', `${viewBoxValues[0] - distance} ${viewBoxValues[1]} ${viewBoxValues[2] + distance} ${viewBoxValues[3]}`);
@@ -346,12 +351,12 @@
                         let distance = Math.abs(topLeft.y - viewBoxValues[0])
                         svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1] - distance} ${viewBoxValues[2]} ${viewBoxValues[3] + distance}`);
                     }
-                    if (bottomRight.x > viewBoxValues[0] + viewBoxValues[2] - 200) {
-                        let distance = Math.abs(bottomRight.x - (viewBoxValues[0] + viewBoxValues[2]))
+                    if (topLeft.x > viewBoxValues[0] + viewBoxValues[2] - 200) {
+                        let distance = Math.abs(topLeft.x - (viewBoxValues[0] + viewBoxValues[2]))
                         svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2] + distance * 3} ${viewBoxValues[3]}`);
                     }
-                    if (bottomRight.y > viewBoxValues[1] + viewBoxValues[3] - 100) {
-                        let distance = Math.abs(bottomRight.y - (viewBoxValues[1] + viewBoxValues[3]))
+                    if (topLeft.y > viewBoxValues[1] + viewBoxValues[3] - 100) {
+                        let distance = Math.abs(topLeft.y - (viewBoxValues[1] + viewBoxValues[3]))
                         svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2]} ${viewBoxValues[3] + distance * 2}`);
                     }
 
