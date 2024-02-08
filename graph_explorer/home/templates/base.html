@@ -80,6 +80,15 @@
 
           <div class="right-header">
 
+              <div class="workspace-management">
+                <button id="createWorkspaceBtn" onclick="createWorkspace()">Create Workspace</button>
+                <select id="workspace-select">
+                    {% for workspace in workspaces %}
+                        <option value="{{ forloop.counter0 }}">{{ workspace.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <div class="top-right">
                 <div class="plugins">
                     <label for="data-source-plugin">Data source plugin</label>
@@ -254,14 +263,7 @@
                     }
 
                     function rerenderGraph(visualizationHtml) {
-                        var centerDiv = document.querySelector('.center');
-                        centerDiv.innerHTML = visualizationHtml;
-                        var scriptTags = centerDiv.getElementsByTagName('script');
-                        for (var i = 0; i < scriptTags.length; i++) {
-                            var script = scriptTags[i].innerHTML;
-                            // Using eval() to execute JavaScript code
-                            eval(script);
-                        }
+                        location.reload()
                      }
                     </script>
 <script>
@@ -297,6 +299,24 @@
 </script>
 
 <script>
+    var selectedWorkspaceName = "{{ currentWorkspace }}";  // Get the name of the current workspace from the template
+
+        var workspaceSelectElement = document.getElementById("workspace-select");
+
+        // Loop through the options of the workspace select element
+        for (var i = 0; i < workspaceSelectElement.options.length; i++) {
+            var option = workspaceSelectElement.options[i];
+
+            // Compare the textContent of the option with the selectedWorkspaceName
+            if (option.textContent.trim() === selectedWorkspaceName.trim()) {
+                // Set the selectedIndex of the workspace select element to match the found option
+                workspaceSelectElement.selectedIndex = i;
+                break;
+            }
+        }
+</script>
+
+<script>
     function searchButtonClicked(){
          var searchInput = document.getElementById("search").value;
          var xhr = new XMLHttpRequest();
@@ -320,6 +340,60 @@
         });
         xhr.send(data);
 
+    }
+</script>
+
+<script>
+    document.getElementById("workspace-select").addEventListener("change", function () {
+        switchWorkspace();
+    });
+
+    function createWorkspace() {
+        var workspaceName = prompt('Enter workspace name: ');
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/create_workspace/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
+    }
+
+    function switchWorkspace() {
+        var selectElement = document.getElementById("workspace-select");
+        var workspaceName = selectElement.options[selectElement.selectedIndex].textContent;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/switch_workspace/", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+        xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
     }
 </script>
 

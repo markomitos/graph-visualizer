@@ -4,12 +4,11 @@ from app_platform.app_platform import AppPlatform
 from xml_data_source.xml_data_source import Counter
 import json
 
-platform: AppPlatform = None
+platform: AppPlatform = AppPlatform()
 
 
 def home(request):
     global platform
-    platform = AppPlatform()
     visualization_html = platform.get_main_view()
     tree_view_style, tree_view_html = platform.get_tree_view()
 
@@ -20,8 +19,10 @@ def home(request):
         "visualizer_plugin_names": platform.get_visualizer_plugin_names(),
         "currentDataSource": platform.current_data_source.name(),
         "currentVisualizer": platform.current_visualizer.name(),
+        "currentWorkspace": platform.get_current_workspace().name,
         "tree_view_style": tree_view_style,
-        "tree_view_html": tree_view_html
+        "tree_view_html": tree_view_html,
+        'workspaces': [{'name': name} for name in platform.get_workspaces()]
     }
     return render(request, "index.html", context)
 
@@ -33,10 +34,8 @@ def change_data_source_plugin(request):
 
         if selected_data_source in data_source_plugins:
             platform.set_current_data_source(selected_data_source)
-            data_source = platform.current_data_source
 
-            data_graph = data_source.fetch_data()
-            visualization_html = platform.current_visualizer.render(data_graph)
+            visualization_html = platform.get_main_view()
 
             return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
         else:
@@ -54,11 +53,9 @@ def change_visualizer_plugin(request):
         # Update the current data source plugin based on the selected option
         visualizer_plugins = platform.get_visualizer_plugin_names()
         if selected_visualizer in visualizer_plugins:
-            platform.set_current_visualizer(selected_visualizer)
 
-            data_source = platform.current_data_source
-            data_graph = data_source.fetch_data()
-            visualization_html = platform.current_visualizer.render(data_graph)
+            platform.set_current_visualizer(selected_visualizer)
+            visualization_html = platform.get_main_view()
 
             return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
         else:
@@ -98,5 +95,23 @@ def reset(request):
         platform.reset_graph()
         visualization_html = platform.get_main_view()
         return JsonResponse({'status': 'success', 'visualization_html': visualization_html})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def create_workspace(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        workspace_name = data.get('workspace_name')
+        platform.create_workspace(workspace_name)
+        return JsonResponse({'status': 'success', 'workspace_name': workspace_name})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def switch_workspace(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        workspace_name = data.get('workspace_name')
+        platform.set_workspace(workspace_name)
+        return JsonResponse({'status': 'success', 'workspace_name': workspace_name})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
