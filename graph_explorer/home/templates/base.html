@@ -151,39 +151,99 @@
 
               <div class="bottom-right">
                   <p id="applied-queries">Applied queries: </p>
-                  <div id="bubbles-container"></div>
+                  <div id="bubbles-container">
+                  {% load custom_filters %}
+
+                    {% for filter in current_filters %}
+                    {% with parsed_filter=filter|parse_filter %}
+                        {% for parsed_part in parsed_filter %}
+                            <div class="bubble" id="bubble-{{ forloop.parentloop.counter }}">
+                                {% for part in parsed_part %}
+                                    {{ part }}
+                                {% endfor %}
+                                <span class="delete-btn" onclick="remove_filter('{{ filter }}', 'bubble-{{ forloop.parentloop.counter }}')">X</span>
+                            </div>
+                        {% endfor %}
+                    {% endwith %}
+                {% endfor %}
+                  </div>
                     <script>
+                        var bubbleContainer = document.getElementById("bubbles-container");
+                        function remove_filter(filter, bubbleId) {
+                                    var bubble = document.getElementById(bubbleId);
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/remove_filter/", true);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+                                    xhr.onreadystatechange = function () {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // Remove bubble from container
+                                                bubbleContainer.removeChild(bubble);
+                                                rerenderGraph()
+                                            } else {
+                                                // Handle error
+                                                console.error('Request failed with status:', xhr.status);
+                                            }
+                                        }
+                                    };
+                                     var data = JSON.stringify({
+                                        filter: filter,
+                                     });
+                                    xhr.send(data);
+                                }
                         function addBubble() {
                             var filter = document.getElementById("filter").value;
                             var comparator = document.getElementById("select-comparator").value;
                             var value = document.getElementById("value").value;
 
                             if (filter && comparator && value) {
-                                var bubbleContainer = document.getElementById("bubbles-container");
 
                                 // Create bubble element
                                 var bubble = document.createElement("div");
                                 bubble.className = "bubble";
                                 bubble.textContent = filter + " " + comparator + " " + value;
+                                add_filter("<" + filter + "> <" + comparator + "> <" + value + ">")
 
                                 // Create delete button
                                 var deleteBtn = document.createElement("span");
                                 deleteBtn.className = "delete-btn";
                                 deleteBtn.textContent = "X";
                                 deleteBtn.onclick = function () {
-                                    bubbleContainer.removeChild(bubble);
+                                    remove_filter("<" + filter + "> <" + comparator + "> <" + value + ">")
                                 };
 
                                 // Append delete button to bubble
                                 bubble.appendChild(deleteBtn);
 
-                                // Append bubble to container
-                                bubbleContainer.appendChild(bubble);
+
 
                                 // Clear input fields
                                 document.getElementById("filter").value = "";
                                 document.getElementById("select-comparator").value = "==";
                                 document.getElementById("value").value = "";
+
+                                function add_filter(filter) {
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/add_filter/", true);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+                                    xhr.onreadystatechange = function () {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // Append bubble to container
+                                                bubbleContainer.appendChild(bubble);
+                                                rerenderGraph()
+                                            } else {
+                                                // Handle error
+                                                console.error('Request failed with status:', xhr.status);
+                                            }
+                                        }
+                                    };
+                                     var data = JSON.stringify({
+                                        filter: filter,
+                                     });
+                                    xhr.send(data);
+                                }
+
                             }
                         }
                     </script>

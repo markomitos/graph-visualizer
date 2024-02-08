@@ -88,8 +88,11 @@ class AppPlatform():
     def load_graph(self):
         self.get_current_workspace().current_graph = self.current_data_source.fetch_data()
         search_inputs = self.get_current_workspace().current_search
+        filters = self.get_current_workspace().current_filters
         for search_input in search_inputs:
             self.get_current_workspace().current_graph = self.get_current_workspace().current_graph.search(search_input)
+        for filter in filters:
+            self.get_current_workspace().current_graph = self.get_current_workspace().current_graph.filter(filter)
 
 
     def get_main_view(self):
@@ -104,6 +107,14 @@ class AppPlatform():
     def search(self, search_input: str):
         self.get_current_workspace().current_graph = self.get_current_workspace().current_graph.search(search_input)
         self.get_current_workspace().current_search.append(search_input)
+
+    def add_filter(self, filter):
+        self.get_current_workspace().current_graph = self.get_current_workspace().current_graph.filter(filter)
+        self.get_current_workspace().current_filters.append(filter)
+
+    def remove_filter(self, filter):
+        self.get_current_workspace().current_filters.remove(filter)
+        self.load_graph()
 
     def reset_graph(self):
         self.get_current_workspace().current_search = []

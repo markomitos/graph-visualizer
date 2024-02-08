@@ -144,7 +144,7 @@ class Graph:
         return result_graph
 
 
-    def filter_graph(self, filter_query):
+    def filter(self, filter_query):
         result_graph = Graph()
 
         try:

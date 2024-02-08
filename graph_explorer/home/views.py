@@ -23,7 +23,8 @@ def home(request):
         "currentWorkspace": platform.get_current_workspace().name,
         "tree_view_style": tree_view_style,
         "tree_view_html": tree_view_html,
-        'workspaces': [{'name': name} for name in platform.get_workspaces()]
+        'workspaces': [{'name': name} for name in platform.get_workspaces()],
+        "current_filters": platform.get_current_workspace().current_filters
     }
     return render(request, "index.html", context)
 
@@ -121,3 +122,24 @@ def switch_workspace(request):
         return JsonResponse({'status': 'success', 'workspace_name': workspace_name})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def add_filter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        filter = data.get('filter')
+        platform.add_filter(filter)
+        return JsonResponse({'status': 'success', 'filter': filter})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
+def remove_filter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        filter = data.get('filter')
+        platform.remove_filter(filter)
+        return JsonResponse({'status': 'success', 'filter': filter})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
