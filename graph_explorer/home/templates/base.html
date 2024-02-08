@@ -263,14 +263,7 @@
                     }
 
                     function rerenderGraph(visualizationHtml) {
-                        var centerDiv = document.querySelector('.center');
-                        centerDiv.innerHTML = visualizationHtml;
-                        var scriptTags = centerDiv.getElementsByTagName('script');
-                        for (var i = 0; i < scriptTags.length; i++) {
-                            var script = scriptTags[i].innerHTML;
-                            // Using eval() to execute JavaScript code
-                            eval(script);
-                        }
+                        location.reload()
                      }
                     </script>
 <script>
@@ -278,6 +271,22 @@
 
     // Find the select element
     var selectElement = document.getElementById("data-source-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedValue = "{{currentVisualizer}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("visualizer-plugin");
 
     for (var i = 0; i < selectElement.options.length; i++) {
         var option = selectElement.options[i];
