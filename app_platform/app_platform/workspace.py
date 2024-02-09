@@ -9,4 +9,7 @@ class Workspace:
         self.current_filters = []
         self.current_search = []
         self.name = name
-
+        self.data_filepaths = {
+            "XML Data Source": "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\xml_data_source\\xml_data_source\\persons.xml",
+            "RDF Data Source": "C:\\Users\\ComTech\\pycharm-projects\\graph-visualizer\\rdf_data_source\\rdf_data_source\\beatles.nt"
+        }
