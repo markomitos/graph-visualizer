@@ -53,9 +53,11 @@ Follow these steps when starting the application for the first time:
 
 ### 2. Simple Visualizer
 
-- **Description**: Parses RDF files into graphs.
-- **Parameters**: Requires a file path as input.
-- **Functionality**: Supports both cyclic and acyclic data structures.
+- **Description**: Generates vertices and edges, connecting them based on specified source, destination, and directedness.
+- **Parameters**: Requires a graph parameter of type `model.Graph`.
+- **Functionality**: Implements logic for creating various types of graphs, including directed, undirected, cyclic, and acyclic graphs.
+- **Attribute Representation**: Parses only the IDs from the nodes of the graph and represents them in circular nodes.
+- **Vertex Identification**: Each node displays the ID of the corresponding vertex.
 
 ### Django
 
@@ -63,6 +65,7 @@ The Django module serves as the frontend framework for the Graph Visualizer appl
 - Force layout tree view
 - Bird view
 - Filtering
+- Search
 - Workspaces
 
 The module is responsible for rendering the graphical elements and ensuring a responsive and intuitive user experience.
