@@ -10,5 +10,6 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('reset/', views.reset, name='reset'),
     path('create_workspace/', views.create_workspace, name='create_workspace'),
+    path('delete_workspace/', views.delete_workspace, name='delete_workspace'),
     path('switch_workspace/', views.switch_workspace, name='switch_workspace'),
 ]

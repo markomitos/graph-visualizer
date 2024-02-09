@@ -84,6 +84,22 @@
         flex: 1;
     }
 
+    .workspace-management {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .workspace-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        gap: 10px;
+    }
+
+
+
 </style>
 
 </head>
@@ -94,12 +110,18 @@
           <div class="left-header">
               <h1>Graph Visualizer</h1>
               <div class="workspace-management">
-                <button id="createWorkspaceBtn" onclick="createWorkspace()">Create Workspace</button>
-                <select id="workspace-select">
-                    {% for workspace in workspaces %}
-                        <option value="{{ forloop.counter0 }}">{{ workspace.name }}</option>
-                    {% endfor %}
-                </select>
+                  <div class="workspace-buttons">
+                      <button id="createWorkspaceBtn" onclick="createWorkspace()">Create Workspace</button>
+                      <button id="deleteWorkspaceBtn" onclick="deleteWorkspace()">Delete Workspace</button>
+                  </div>
+                  <div class="workspace-select">
+                      <label for="workspace-select">Workspace:</label>
+                      <select id="workspace-select">
+                          {% for workspace in workspaces %}
+                            <option value="{{ forloop.counter0 }}">{{ workspace.name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
               </div>
           </div>
 
@@ -526,6 +548,37 @@
             workspace_name: workspaceName,
         });
         xhr.send(data);
+    }
+
+    function deleteWorkspace() {
+        var isSure = confirm('Are you sure you want to delete the current workspace?');
+        if (isSure) {
+            var selectElement = document.getElementById("workspace-select");
+            var workspaceName = selectElement.options[selectElement.selectedIndex].textContent;
+            var xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "/delete_workspace/", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.is_workspace_deleted) {
+                            location.reload();
+                        }
+                        else {
+                            alert("You cannot delete the last workspace. At least one workspace must remain for the system to function properly.")
+                        }
+                    } else {
+                                            // Handle error
+                        console.error('Request failed with status:', xhr.status);
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                workspace_name: workspaceName,
+            });
+            xhr.send(data);
+        }
     }
 
     function switchWorkspace() {

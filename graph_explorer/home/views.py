@@ -113,6 +113,16 @@ def create_workspace(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 @csrf_exempt
+def delete_workspace(request):
+    if request.method == 'DELETE':
+        data = json.loads(request.body)
+        workspace_name = data.get('workspace_name')
+        is_workspace_deleted = platform.delete_workspace(workspace_name)
+        return JsonResponse({'status': 'success', 'is_workspace_deleted': is_workspace_deleted})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@csrf_exempt
 def switch_workspace(request):
     if request.method == 'POST':
         data = json.loads(request.body)

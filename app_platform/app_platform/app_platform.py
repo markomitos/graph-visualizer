@@ -24,6 +24,13 @@ class AppPlatform():
             workspace = Workspace(name)
             PlatformConfig.workspaces[name] = workspace
             self.load_graph()
+    def delete_workspace(self, name:str):
+        if name in PlatformConfig.workspaces and len(PlatformConfig.workspaces) > 1:
+            PlatformConfig.workspaces.pop(name)
+            PlatformConfig.current_workspace = next(iter(PlatformConfig.workspaces))
+            self.load_graph()
+            return True
+        return False
 
     def set_workspace(self, name):
         for workspace in PlatformConfig.workspaces:
