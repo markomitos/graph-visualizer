@@ -37,7 +37,6 @@ class XMLDataSource(DataSourceBase):
             parsed_attributes[key] = parsed_value
 
         node_attributes = parsed_attributes
-        print(parsed_attributes)
 
         # If it has no children add an attribute to the parent or handle reference
         if len(element) == 0:
