@@ -27,8 +27,17 @@ class XMLDataSource(DataSourceBase):
         return graph
 
     def construct_graph(self, graph, element, parent_node=None):
+
+        #Parse attributes
         node_attributes = element.attrib
-        print(node_attributes)
+        parsed_attributes = {}
+
+        for key, value in node_attributes.items():
+            parsed_value = self.parse_string_to_fit_type(value)
+            parsed_attributes[key] = parsed_value
+
+        node_attributes = parsed_attributes
+        print(parsed_attributes)
 
         # If it has no children add an attribute to the parent or handle reference
         if len(element) == 0:
@@ -45,7 +54,7 @@ class XMLDataSource(DataSourceBase):
                 else:
                     # Add an attribute
                     node = graph.get_vertex(parent_node)
-                    node.data[element.tag] = element.text
+                    node.data[element.tag] = super().parse_string_to_fit_type(element.text)
 
         else:
             self.counter.increment(element.tag)
