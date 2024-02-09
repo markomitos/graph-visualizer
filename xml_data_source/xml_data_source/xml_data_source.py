@@ -41,7 +41,7 @@ class XMLDataSource(DataSourceBase):
                     index = int(reference.split('[')[1].rstrip(']'))
                     tag = reference.split('[')[0]
                     reference_node_id = f"{tag}_{index}"
-                    graph.add_edge(parent_node, reference_node_id)
+                    graph.add_edge(parent_node, reference_node_id, True)
                 else:
                     # Add an attribute
                     node = graph.get_vertex(parent_node)
@@ -63,7 +63,7 @@ class XMLDataSource(DataSourceBase):
 
             # Connect the current node to its parent node, if it exists
             if parent_node is not None:
-                graph.add_edge(parent_node, node_id)
+                graph.add_edge(parent_node, node_id, True)
 
 
 class Counter:

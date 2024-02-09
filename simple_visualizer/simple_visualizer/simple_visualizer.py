@@ -39,7 +39,7 @@ class SimpleVisualiser(VisualizerBase):
                                     .attr("stroke", "#999")
                                     .attr("stroke-opacity", 0.6)
                                     .attr("stroke-width", 2)
-                                    .attr("marker-end", "url(#arrowhead)"); // Add arrowhead marker
+                                    .attr("marker-end", d => d.directed ? "url(#arrowhead)" : null); // Add arrowhead marker if directed is true
 
                                     // Render the nodes
                                     const node = container.append("g")

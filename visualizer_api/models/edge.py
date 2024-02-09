@@ -10,7 +10,8 @@ class Edge:
         return {
             "source": self.source.id,
             "target": self.target.id,
-            "value": self.value
+            "value": self.value,
+            "directed": self.is_directed
         }
 
     def is_adjacent(self, vertex):
@@ -25,5 +26,6 @@ class Edge:
         return {
             "source": self.source.id,
             "target": self.target.id,
-            "value": self.value
+            "value": self.value,
+            "directed": self.is_directed
         }
