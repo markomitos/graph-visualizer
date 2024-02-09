@@ -1,23 +1,52 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
- $(document).ready(function() {
+    class Observable {
+      constructor() {
+        this.observers = [];
+      }
+
+      subscribe(func) {
+        this.observers.push(func);
+      }
+
+      unsubscribe(func) {
+        this.observers = this.observers.filter((observer) => observer !== func);
+      }
+
+      notify(data) {
+        this.observers.forEach((observer) => observer(data));
+      }
+    }
+
+    const observable = new Observable();
+
+    $(document).ready(function() {
     // Function to update the bird-view div with the contents of the center div
     const centerG = $('#center-graph-g')
     const birdViewG =  $('#bird-graph-g')
 
+    // Create a new instance of MutationObserver and specify a callback function
+    const mutationObserver = new MutationObserver(function(mutationsList, observer) {
+        observable.notify();
+    });
 
+    // Configure the observer to watch for changes in child nodes, subtree, attributes, etc.
+    const config = { attributes: true, childList: true, subtree: true };
 
-     function updateBirdView() {
+    // Start observing the target node for specified changes
+    mutationObserver.observe(centerG.get(0), config);
+
+     function updateBirdViewInitial() {
             var centerContents = centerG.contents().clone();
             birdViewG.empty().append(centerContents);
     }
 
     // Initial update
-    updateBirdView();
+    updateBirdViewInitial();
 
     // Listen for common events in the document and update the bird-view accordingly
-    function updateBirdViewOnTick() {
-            updateBirdView();
+    function updateBirdView() {
+            updateBirdViewInitial();
 
             const svg = document.getElementById('bird-graph-svg');
             const nodes = svg.querySelectorAll('.node');
@@ -55,7 +84,8 @@
 
             });
         }
+        observable.subscribe(updateBirdView)
 
-        setInterval(updateBirdViewOnTick, 1);
+        //setInterval(updateBirdViewOnTick, 1);
 });
 </script>
