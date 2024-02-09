@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import random
+from datetime import datetime
 
 def generate_person_data(num_persons):
     persons = []
@@ -10,9 +11,11 @@ def generate_person_data(num_persons):
         person = {
             'id': person_id,
             'name': f'Person {i}',
+            'date_of_birth': datetime.strftime(datetime(random.randint(1950, 2000), random.randint(1, 12), random.randint(1, 28)), '%Y-%m-%d'),
             'street': f'{random.randint(1, 999)} {random.choice(["Main", "Second", "Park"])} St',
             'city': random.choice(["New York", "Los Angeles", "Chicago"]),
-            'owner_reference': random.choice(other_persons)
+            'owner_reference': random.choice(other_persons),
+            'monthly_salary': round(random.uniform(1000.0, 5000.0), 2)
         }
         persons.append(person)
     return persons
@@ -27,6 +30,9 @@ def generate_persons_xml(num_persons):
         name_elem = ET.SubElement(person_elem, 'name')
         name_elem.text = person['name']
 
+        dob_elem = ET.SubElement(person_elem, 'date_of_birth')
+        dob_elem.text = person['date_of_birth']
+
         address_elem = ET.SubElement(person_elem, 'address')
 
         street_elem = ET.SubElement(address_elem, 'street')
@@ -34,6 +40,9 @@ def generate_persons_xml(num_persons):
 
         city_elem = ET.SubElement(address_elem, 'city')
         city_elem.text = person['city']
+
+        salary_elem = ET.SubElement(person_elem, 'monthly_salary')
+        salary_elem.text = str(person['monthly_salary'])
 
         owner_elem = ET.SubElement(address_elem, 'owner')
         reference_elem = ET.SubElement(owner_elem, 'Person', reference=f"Person[{person['owner_reference']}]")

@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from visualizer_api.data_source_api import DataSourceBase
 from models.graph import Graph
+import re
 
 
 class RdfDataSource(DataSourceBase):
@@ -36,6 +39,9 @@ class RdfDataSource(DataSourceBase):
             obj = parts[2][1:-1]
         else:
             obj = parts[2]
+
+        predicate = self.parse_property(predicate)
+        obj = self.parse_xml_schema_type(obj)
         graph.add_data_to_vertex(subject, predicate, obj)
 
 
@@ -44,6 +50,30 @@ class RdfDataSource(DataSourceBase):
         weight = 1
 
         graph.add_edge(subject, obj, is_directed, weight, predicate)
+
+    def parse_xml_schema_type(self, value):
+        match = re.match(r'"([^"]+)"\^\^<http://www\.w3\.org/2001/XMLSchema#(\w+)>', value)
+        if match:
+            value_str, type_str = match.groups()
+            if type_str == 'string':
+                return value_str
+            elif type_str == 'integer':
+                return int(value_str)
+            elif type_str == 'nonNegativeInteger':
+                return int(value_str)
+            elif type_str == 'float':
+                return float(value_str)
+            elif type_str == 'date':
+                return datetime.strptime(value_str, '%Y-%m-%d').date()
+            elif type_str == 'dateTime':
+                return datetime.strptime(value_str, '%Y-%m-%dT%H:%M:%S')
+        else:
+            return value
+
+    def parse_property(self,property):
+        property = property.replace("http://dbpedia.org/property/","")
+        property = property.replace("http://dbpedia.org/ontology/","")
+        return property
 
 if __name__ == "__main__":
     a = RdfDataSource("C:\\Users\\marko\\Desktop\\fakultet\\5. semestar\\sok\\projekat\\graph-visualizer\\rdf_data_source\\rdf_data_source\\michael_jackson.nt")
