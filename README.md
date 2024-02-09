@@ -57,6 +57,24 @@ Follow these steps when starting the application for the first time:
 - **Parameters**: Requires a file path as input.
 - **Functionality**: Supports both cyclic and acyclic data structures.
 
+### Django
+
+The Django module serves as the frontend framework for the Graph Visualizer application. It provides the user interface and handles client-side interactions. Django facilitates the presentation of data visualizations and enables users to interact with various features, including:
+- Force layout tree view
+- Bird view
+- Filtering
+- Workspaces
+
+The module is responsible for rendering the graphical elements and ensuring a responsive and intuitive user experience.
+
+### API
+
+The API module contains interfaces for both visualizers and data sources. It defines the contracts and methods that need to be implemented by various plugins in order to integrate with the Graph Visualizer application. By providing a standardized set of interfaces, the API module enables seamless communication and interoperability between different components of the system, facilitating modular development and extensibility.
+
+### App Platform
+
+The App Platform module is responsible for orchestrating the data flow within the Graph Visualizer application. It utilizes data sources to fetch raw data and visualizers to transform and render that data into graphical representations. The platform then integrates these visualizations into the frontend GUI, providing users with access to features such as force layout tree view, bird view, filtering, and workspaces. By managing the data processing pipeline and user interactions, the App Platform module ensures a cohesive and interactive user experience.
+
 
 ## Team Members
 
