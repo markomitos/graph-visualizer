@@ -1,3 +1,5 @@
+import os
+
 import pkg_resources
 from app_platform.workspace import Workspace
 from typing import Union, List
@@ -16,7 +18,7 @@ class AppPlatform():
         self.data_source_plugins = self.load_plugins("data_sources")
         self.visualizer_plugins = self.load_plugins("visualizers")
         self.create_workspace("Default")
-        self.current_data_source.filepath = PlatformConfig.data_filepaths[self.current_data_source.name()]
+        self.current_data_source.filepath = self.get_current_workspace().data_filepaths[self.current_data_source.name()]
         self.load_graph()
 
     def create_workspace(self, name: str):
@@ -84,7 +86,7 @@ class AppPlatform():
         for data_source in self.data_source_plugins:
             if data_source.name() == name:
                 self.get_current_workspace().data_source = name
-                self.current_data_source.filepath = PlatformConfig.data_filepaths[self.current_data_source.name()]
+                self.current_data_source.filepath = self.get_current_workspace().data_filepaths[self.current_data_source.name()]
                 self.load_graph()
 
     def set_current_visualizer(self, name):
@@ -122,6 +124,14 @@ class AppPlatform():
     def remove_filter(self, filter):
         self.get_current_workspace().current_filters.remove(filter)
         self.load_graph()
+
+    def change_filepath(self, file_type, file_path):
+        if os.path.exists(file_path):
+            self.get_current_workspace().data_filepaths[file_type] = file_path
+            self.current_data_source.filepath = file_path
+            self.load_graph()
+            return True
+        return False
 
     def reset_graph(self):
         self.get_current_workspace().current_search = []

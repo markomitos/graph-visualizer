@@ -14,4 +14,5 @@ urlpatterns = [
     path('switch_workspace/', views.switch_workspace, name='switch_workspace'),
     path('add_filter/', views.add_filter, name='add_filter'),
     path('remove_filter/', views.remove_filter, name='remove_filter'),
+    path('change_file_path/', views.change_file_path, name='change_file_path'),
 ]

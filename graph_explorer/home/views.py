@@ -153,3 +153,13 @@ def remove_filter(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+@csrf_exempt
+def change_file_path(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        file_path = data.get('file_path')
+        file_type = data.get('file_type')
+        is_data_source_changed = platform.change_filepath(file_type, file_path)
+        return JsonResponse({'status': 'success', 'is_data_source_changed': is_data_source_changed})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
