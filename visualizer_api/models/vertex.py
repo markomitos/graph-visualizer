@@ -1,15 +1,28 @@
 from datetime import datetime,date
 
+
 class Vertex:
     def __init__(self, vertex_id, data):
         self.id = vertex_id
         self.data = data
 
     def __str__(self):
-        return {"id": self.id, "data": self.data}
+        new_data = {}
+        for key, value in self.data.items():
+            if isinstance(value, date):
+                new_data[key] = value.isoformat()
+            else:
+                new_data[key] = value
+        return {"id": self.id, "data": new_data}
 
     def to_dict(self):
-        return {"id": self.id, "data": self.data}
+        new_data = {}
+        for key,value in self.data.items():
+            if isinstance(value, date):
+                new_data[key] = value.isoformat()
+            else:
+                new_data[key] = value
+        return {"id": self.id, "data": new_data}
 
     def id_to_dict(self):
         return {"id": self.id}
