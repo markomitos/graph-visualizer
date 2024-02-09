@@ -285,7 +285,9 @@
 
               </svg>
           </div>
+          <button id="refreshButton">Refresh bird view</button>
           <script>
+            // Get the button element by its ID
 
           </script>
       </div>
@@ -382,6 +384,15 @@
                     .attr("stroke-width", 2)
                     .attr("fill", "none");
             }
+
+
+            const refreshButton = document.getElementById('refreshButton');
+            const svgForReset = document.getElementById('bird-graph-svg');
+            // Add click event listener to the button
+            refreshButton.addEventListener('click', function() {
+                svgForReset.setAttribute("viewBox", "0 0 100 100");
+                console.log("Bird view refreshed!");
+            });
         </script>
           </div>
       </div>
