@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <script type="text/javascript" src="https://d3js.org/d3.v3.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+    <title>{{title}}</title>
+    {% block head_sadrzaj %}{% endblock %}
+    {% block extra_css %}{% endblock %}
+    <style>
+    .content_graph{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    }
+    #bubbles-container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .bubble {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 10px;
+        border-style: solid;
+        border-width: thin;
+        border-color: slateblue;
+    }
+    #bird-view{
+        width: 99%;
+        height: 200px;
+        border: black solid 1px;
+    }
+    .center{
+     width: 80%;
+    }
+
+    .delete-btn {
+        cursor: pointer;
+        margin-left: 10px;
+        color: red;
+    }
+
+    .bottom-right {
+        border-left: 1px black solid;
+        display: flex;
+        justify-items: center;
+        padding: 5px 10px 5px 10px;
+    }
+
+    #applied-queries {
+    padding-right: 5px;
+    }
+
+    #graph-container {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .left {
+    margin: 0px;
+    float: left;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    border-bottom:1px black solid;
+    border-left:1px black solid;
+    border-right:1px black solid;
+    height: calc(100vh - 200px);
+    }
+
+    .content_graph{
+        height: calc(100% - 50px);
+    }
+
+    .tree-view-container {
+        height: 60%;
+        overflow: auto;
+        flex: 1;
+    }
+
+    .workspace-management {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .workspace-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        gap: 10px;
+    }
+
+    .change-file-path {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .search {
+        margin-left: auto;
+    }
+
+
+
+</style>
+
+</head>
+<body>
+<div class="page">
+      <div class="header">
+
+          <div class="left-header">
+              <h1>Graph Visualizer</h1>
+              <div class="workspace-management">
+                  <div class="workspace-buttons">
+                      <button id="createWorkspaceBtn" onclick="createWorkspace()">Create Workspace</button>
+                      <button id="deleteWorkspaceBtn" onclick="deleteWorkspace()">Delete Workspace</button>
+                  </div>
+                  <div class="workspace-select">
+                      <label for="workspace-select">Workspace:</label>
+                      <select id="workspace-select">
+                          {% for workspace in workspaces %}
+                            <option value="{{ forloop.counter0 }}">{{ workspace.name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+              </div>
+          </div>
+
+          <div class="right-header">
+
+            <div class="top-right">
+
+                <div class="change-file-path">
+                    <label for="absolute-path">File path: </label><input id="absolute-path">
+                </div>
+                {% include 'change_file_path.html' %}
+
+                <div class="plugins">
+                    <label for="data-source-plugin">Data source plugin</label>
+                    <select class="plugin-select" id="data-source-plugin">
+                        {% for plugin_name in data_source_plugin_names %}
+                            <option value="{{ plugin_name }}">{{ plugin_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="visualizer-plugin">Visualizer plugin</label>
+                    <select class="plugin-select" id="visualizer-plugin">
+                        {% for plugin_name in visualizer_plugin_names %}
+                            <option value="{{ plugin_name }}">{{ plugin_name }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+            </div>
+
+              <div class="center-right">
+                  <div class="filter">
+                      <label for="filter">Filter: </label><input id="filter">
+
+                      <label for="select-comparator">Comparator: </label>
+                        <select id="select-comparator">
+                          <option value="==">==</option>
+                          <option value=">">></option>
+                          <option value=">=">>=</option>
+                          <option value="<"><</option>
+                          <option value="<="><=</option>
+                          <option value="!=">!=</option>
+                        </select>
+
+                      <label for="value">Value: </label><input id="value">
+                  </div>
+                  <button onclick="addBubble()">Submit</button>
+                  <div class="search">
+                    <label for="search">Search: </label><input id="search">
+                    <button id="search-button" onclick="searchButtonClicked()"> Search </button>
+                    <button id="reset-button" onclick="resetButtonClicked()"> Reset </button>
+                </div>
+              </div>
+
+              <div class="bottom-right">
+                  <p id="applied-queries">Applied queries: </p>
+                  <div id="bubbles-container">
+                  {% load custom_filters %}
+
+                    {% for filter in current_filters %}
+                    {% with parsed_filter=filter|parse_filter %}
+                        {% for parsed_part in parsed_filter %}
+                            <div class="bubble" id="bubble-{{ forloop.parentloop.counter }}">
+                                {% for part in parsed_part %}
+                                    {{ part }}
+                                {% endfor %}
+                                <span class="delete-btn" onclick="remove_filter('{{ filter }}', 'bubble-{{ forloop.parentloop.counter }}')">X</span>
+                            </div>
+                        {% endfor %}
+                    {% endwith %}
+                {% endfor %}
+                  </div>
+                    <script>
+                        var bubbleContainer = document.getElementById("bubbles-container");
+                        function remove_filter(filter, bubbleId) {
+                                    var bubble = document.getElementById(bubbleId);
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/remove_filter/", true);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+                                    xhr.onreadystatechange = function () {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // Remove bubble from container
+                                                bubbleContainer.removeChild(bubble);
+                                                rerenderGraph()
+                                            } else {
+                                                // Handle error
+                                                console.error('Request failed with status:', xhr.status);
+                                            }
+                                        }
+                                    };
+                                     var data = JSON.stringify({
+                                        filter: filter,
+                                     });
+                                    xhr.send(data);
+                                }
+                        function addBubble() {
+                            var filter = document.getElementById("filter").value;
+                            var comparator = document.getElementById("select-comparator").value;
+                            var value = document.getElementById("value").value;
+
+                            if (filter && comparator && value) {
+
+                                // Create bubble element
+                                var bubble = document.createElement("div");
+                                bubble.className = "bubble";
+                                bubble.textContent = filter + " " + comparator + " " + value;
+                                add_filter("<" + filter + "> <" + comparator + "> <" + value + ">")
+
+                                // Create delete button
+                                var deleteBtn = document.createElement("span");
+                                deleteBtn.className = "delete-btn";
+                                deleteBtn.textContent = "X";
+                                deleteBtn.onclick = function () {
+                                    remove_filter("<" + filter + "> <" + comparator + "> <" + value + ">")
+                                };
+
+                                // Append delete button to bubble
+                                bubble.appendChild(deleteBtn);
+
+
+
+                                // Clear input fields
+                                document.getElementById("filter").value = "";
+                                document.getElementById("select-comparator").value = "==";
+                                document.getElementById("value").value = "";
+
+                                function add_filter(filter) {
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "/add_filter/", true);
+                                    xhr.setRequestHeader("Content-Type", "application/json");
+                                    xhr.onreadystatechange = function () {
+                                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                                            if (xhr.status === 200) {
+                                                // Append bubble to container
+                                                bubbleContainer.appendChild(bubble);
+                                                rerenderGraph()
+                                            } else {
+                                                // Handle error
+                                                console.error('Request failed with status:', xhr.status);
+                                            }
+                                        }
+                                    };
+                                     var data = JSON.stringify({
+                                        filter: filter,
+                                     });
+                                    xhr.send(data);
+                                }
+
+                            }
+                        }
+                    </script>
+              </div>
+
+          </div>
+      </div>
+      <div class="content_graph">
+          <div class="left">
+              <div class="tree-view-container">
+                  {% block treeview %}{% endblock %}
+              </div>
+          <div id="bird-view">
+              <svg id="bird-graph-svg" viewBox="0 0 928 680" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+                  <g id="bird-graph-g" transform="translate(271.5788644740471,88.54958197403138) scale(0.3)">
+
+                  </g>
+
+              </svg>
+          </div>
+          <button id="refreshButton">Refresh bird view</button>
+          <script>
+            // Get the button element by its ID
+
+          </script>
+      </div>
+      <div class="center" id="main-view">
+          <div id="graph-container">
+              <svg id="center-graph-svg" viewBox="0 0 928 680" style="width: 100%;" preserveAspectRatio="xMidYMid meet">
+                  <g id="center-graph-g" >
+                    <rect id="bird-view-scope" width="0" height="0"></rect>
+
+                  </g>
+              </svg>
+          {% include 'bird_view/bird_view_zoom.html' %}
+
+          </div>
+      </div>
+      </div>
+        {% include 'bird_view/bird_view_expand.html' %}
+</div>
+<script>
+                        document.getElementById("data-source-plugin").addEventListener("change", function () {
+                            changeDataSourcePlugin();
+                        });
+
+                        document.getElementById("visualizer-plugin").addEventListener("change", function () {
+                            changeVisualizerPlugin();
+                        });
+
+                        function changeDataSourcePlugin() {
+                            var selectedDataSource = document.getElementById("data-source-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-data-source-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                dataSource: selectedDataSource,
+                             });
+                            xhr.send(data);
+                        }
+
+                        function changeVisualizerPlugin() {
+                            var selectedVisualizer = document.getElementById("visualizer-plugin").value;
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/change-visualizer-plugin/", true);
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === XMLHttpRequest.DONE) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                                    } else {
+                                        // Handle error
+                                        console.error('Request failed with status:', xhr.status);
+                                    }
+                                }
+                            };
+                             var data = JSON.stringify({
+                                visualizer: selectedVisualizer,
+                             });
+                            xhr.send(data);
+                        }
+
+                    function rerenderGraph(visualizationHtml) {
+                        location.reload()
+                     }
+                    </script>
+<script>
+    var selectedValue = "{{currentDataSource}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("data-source-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedValue = "{{currentVisualizer}}";
+
+    // Find the select element
+    var selectElement = document.getElementById("visualizer-plugin");
+
+    for (var i = 0; i < selectElement.options.length; i++) {
+        var option = selectElement.options[i];
+
+        if (option.value === selectedValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+</script>
+
+<script>
+    var selectedWorkspaceName = "{{ currentWorkspace }}";  // Get the name of the current workspace from the template
+
+        var workspaceSelectElement = document.getElementById("workspace-select");
+
+        // Loop through the options of the workspace select element
+        for (var i = 0; i < workspaceSelectElement.options.length; i++) {
+            var option = workspaceSelectElement.options[i];
+
+            // Compare the textContent of the option with the selectedWorkspaceName
+            if (option.textContent.trim() === selectedWorkspaceName.trim()) {
+                // Set the selectedIndex of the workspace select element to match the found option
+                workspaceSelectElement.selectedIndex = i;
+                break;
+            }
+        }
+</script>
+
+<script>
+    function searchButtonClicked(){
+         var searchInput = document.getElementById("search").value;
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/search/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            searchInput: searchInput,
+        });
+        xhr.send(data);
+
+    }
+</script>
+
+<script>
+    document.getElementById("workspace-select").addEventListener("change", function () {
+        switchWorkspace();
+    });
+
+    function createWorkspace() {
+        var workspaceName = prompt('Enter workspace name: ');
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/create_workspace/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
+    }
+
+    function deleteWorkspace() {
+        var isSure = confirm('Are you sure you want to delete the current workspace?');
+        if (isSure) {
+            var selectElement = document.getElementById("workspace-select");
+            var workspaceName = selectElement.options[selectElement.selectedIndex].textContent;
+            var xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "/delete_workspace/", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.is_workspace_deleted) {
+                            location.reload();
+                        }
+                        else {
+                            alert("You cannot delete the last workspace. At least one workspace must remain for the system to function properly.")
+                        }
+                    } else {
+                                            // Handle error
+                        console.error('Request failed with status:', xhr.status);
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                workspace_name: workspaceName,
+            });
+            xhr.send(data);
+        }
+    }
+
+    function switchWorkspace() {
+        var selectElement = document.getElementById("workspace-select");
+        var workspaceName = selectElement.options[selectElement.selectedIndex].textContent;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/switch_workspace/", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        location.reload();
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        var data = JSON.stringify({
+            workspace_name: workspaceName,
+        });
+        xhr.send(data);
+    }
+</script>
+
+<script>
+    function resetButtonClicked(){
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "/reset/", true);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState === XMLHttpRequest.DONE) {
+                 if (xhr.status === 200) {
+                     var response = JSON.parse(xhr.responseText);
+                                        // Rerender the graph
+                                        rerenderGraph(response.visualization_html)
+                 } else {
+                                        // Handle error
+                     console.error('Request failed with status:', xhr.status);
+                 }
+             }
+         };
+        xhr.send();
+
+    }
+</script>
+
+
+</body>
+</html>
