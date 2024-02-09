@@ -68,6 +68,37 @@ def generate_tree_view(dataGraph: Graph):
     # Add the JavaScript function
     tree_view_section += """
     <script>
+        function updateTreeFocusColor(vertexId){
+            const liElements = document.querySelectorAll('.vertex-info');
+            liElements.forEach(element => {
+                let span = element.querySelectorAll('span')[0];
+                if(span.textContent === vertexId){
+                    span.style.color = 'red';
+                    loadVertexInfo(span);
+                } else {
+                    span.style.color = '#356fdb';
+                }
+            });
+        }
+    
+    
+        const liElements = document.querySelectorAll('.vertex-info');
+
+        // Add click event listener to each main li element
+        liElements.forEach(element => {
+            element.addEventListener('click', function() {
+                let spanForChange = element.querySelectorAll('span')[0];
+                updateMainViewFocusColor(spanForChange.textContent);
+            
+                liElements.forEach(n => {
+                    let span = n.querySelectorAll('span')[0];
+                    span.style.color = '#356fdb';
+                });
+    
+                spanForChange.style.color = 'red';
+            });
+        });
+    
         function loadVertexInfo(element) {
 
             var listItem = element.closest('li'); // Find the closest parent li element

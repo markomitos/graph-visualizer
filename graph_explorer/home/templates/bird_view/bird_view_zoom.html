@@ -8,9 +8,37 @@
     // Get all <g> tags with class "node"
     const nodes = document.querySelectorAll('g.node');
 
+    function updateMainViewFocusColor(vertexId){
+            const nodes = document.querySelectorAll('g.node');
+            nodes.forEach(node => {
+                let id = node.querySelectorAll('text')[0].textContent;
+                if(id === vertexId){
+                    let secondRect = node.querySelectorAll('rect')[1];
+                    if(secondRect === undefined){
+                        secondRect = node.querySelectorAll('circle')[0];
+                        secondRect.setAttribute('fill', 'red');
+                    }else{
+                        secondRect.setAttribute('fill', 'red');
+
+                    }
+                } else {
+                    let secondRect = node.querySelectorAll('rect')[1];
+                    if(secondRect === undefined){
+                        secondRect = node.querySelectorAll('circle')[0];
+                        secondRect.setAttribute('fill', '#1f77b4');
+                    }else{
+                        secondRect.setAttribute('fill', '#75d1f0');
+
+                    }
+                }
+            });
+        }
+
     // Add click event listener to each node
     nodes.forEach(node => {
         node.addEventListener('click', function() {
+            let id = node.querySelectorAll('text')[0].textContent;
+            updateTreeFocusColor(id);
             // Reset the color of all nodes' second rects to #1f77b4
             nodes.forEach(n => {
                 let secondRect = n.querySelectorAll('rect')[1];

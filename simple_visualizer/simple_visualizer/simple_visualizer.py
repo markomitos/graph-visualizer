@@ -61,7 +61,7 @@ class SimpleVisualiser(VisualizerBase):
                                     node.append("text")
                                         .style("text-anchor", "middle")
                                         .attr("dy", "0.35em")
-                                        .text(d => JSON.stringify(d.id));  // Display id
+                                        .text(d => d.id);  // Display id
 
                                     // Define drag behavior functions
                                     function dragstarted(event, d) {
