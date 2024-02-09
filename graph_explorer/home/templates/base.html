@@ -285,7 +285,9 @@
 
               </svg>
           </div>
+          <button id="refreshButton">Refresh bird view</button>
           <script>
+            // Get the button element by its ID
 
           </script>
       </div>
@@ -297,156 +299,12 @@
 
                   </g>
               </svg>
-        <script src="https://d3js.org/d3.v7.min.js"></script>
-            {{ visualization_html | safe }}
-        <script>
-            const svg = d3.select("#center-graph-svg");
-            const g = d3.select("#center-graph-g");
-            const birdSVG = d3.select("#bird-graph-svg");
-            const rect = d3.select("#bird-view-scope");
-            // Get all <g> tags with class "node"
-            const nodes = document.querySelectorAll('g.node');
+          {% include 'bird_view/bird_view_zoom.html' %}
 
-            // Add click event listener to each node
-            nodes.forEach(node => {
-                node.addEventListener('click', function() {
-                    // Reset the color of all nodes' second rects to #1f77b4
-                    nodes.forEach(n => {
-                        let secondRect = n.querySelectorAll('rect')[1];
-                        if(secondRect === undefined){
-                            secondRect = n.querySelectorAll('circle')[0];
-                            secondRect.setAttribute('fill', '#1f77b4');
-
-                        }else{
-                            secondRect.setAttribute('fill', '#75d1f0');
-
-                        }
-
-
-                    });
-
-                    // Change the color of the clicked node's second rect to red
-                    let secondRect = this.querySelectorAll('rect')[1];
-                    if(secondRect === undefined){
-                            secondRect = this.querySelectorAll('circle')[0];
-                    }
-                    secondRect.setAttribute('fill', 'red');
-                });
-            });
-            svg.append("defs")
-                .append("marker")
-                .attr("id", "arrowhead")
-                .attr("markerWidth", 10)
-                .attr("markerHeight", 7)
-                .attr("refX", 10)
-                .attr("refY", 3.5)
-                .attr("orient", "auto")
-                .append("polygon")
-                .attr("points", "0 0, 10 3.5, 0 7")
-                .attr("fill", "gray")
-
-            const zoom = d3.zoom()
-                .scaleExtent([1/2, 4]) // Set the minimum and maximum zoom levels
-                .on("zoom", zoomed);
-
-            svg.call(zoom);
-
-            function zoomed(event) {
-                g.attr("transform", event.transform);
-
-                const centerTransform = event.transform;
-
-                const scaleX = centerTransform.k;
-                const scaleY = centerTransform.k;
-                const translateX = centerTransform.x;
-                const translateY = centerTransform.y;
-
-                // Calculate the dimensions of the red rectangle based on the zoom level
-                const viewBox = svg.attr("viewBox").split(" ");
-                const viewBoxWidth = parseFloat(viewBox[2]);
-                const viewBoxHeight = parseFloat(viewBox[3]);
-
-                const rectWidth = viewBoxWidth / scaleX;
-                const rectHeight = viewBoxHeight / scaleY;
-
-                // Calculate the position of the red rectangle based on the translation
-                const rectX = -translateX / scaleX;
-                const rectY = -translateY / scaleY;
-
-                // Update the existing red rectangle attributes
-                rect.attr("x", rectX)
-                    .attr("y", rectY)
-                    .attr("width", rectWidth)
-                    .attr("height", rectHeight)
-                    .attr("stroke", "red")
-                    .attr("stroke-width", 2)
-                    .attr("fill", "none");
-            }
-        </script>
           </div>
       </div>
       </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-     $(document).ready(function() {
-        // Function to update the bird-view div with the contents of the center div
-        const centerG = $('#center-graph-g')
-        const birdViewG =  $('#bird-graph-g')
-
-
-
-         function updateBirdView() {
-                var centerContents = centerG.contents().clone();
-                birdViewG.empty().append(centerContents);
-        }
-
-        // Initial update
-        updateBirdView();
-
-        // Listen for common events in the document and update the bird-view accordingly
-        function updateBirdViewOnTick() {
-                updateBirdView();
-
-                const svg = document.getElementById('bird-graph-svg');
-                const nodes = svg.querySelectorAll('.node');
-
-                const viewBoxValues = svg.getAttribute('viewBox').split(' ').map(Number);
-                nodes.forEach(node => {
-
-                    const transformAttr = node.getAttribute('transform');
-                    const [translateX, translateY] = transformAttr.match(/translate\(([^,]+),([^)]+)\)/).slice(1).map(Number);
-
-                    const gElement = document.getElementById('bird-graph-g');
-
-                    const transformAttrG = gElement.getAttribute('transform');
-                    const [nodeTranslateX, nodeTranslateY] = transformAttrG.match(/translate\(([^,]+),([^)]+)\)/).slice(1).map(Number);
-                    const scale = parseFloat(transformAttrG.match(/scale\((.*?)\)/)[1]);
-
-                    const topLeft = { x: (nodeTranslateX + translateX) * scale, y: (nodeTranslateY + translateY) * scale };
-
-                    if (topLeft.x < viewBoxValues[0]) {
-                        let distance = Math.abs(topLeft.x - viewBoxValues[0])
-                        svg.setAttribute('viewBox', `${viewBoxValues[0] - distance} ${viewBoxValues[1]} ${viewBoxValues[2] + distance} ${viewBoxValues[3]}`);
-                    }
-                    if (topLeft.y < viewBoxValues[1]) {
-                        let distance = Math.abs(topLeft.y - viewBoxValues[0])
-                        svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1] - distance} ${viewBoxValues[2]} ${viewBoxValues[3] + distance}`);
-                    }
-                    if (topLeft.x > viewBoxValues[0] + viewBoxValues[2] - 200) {
-                        let distance = Math.abs(topLeft.x - (viewBoxValues[0] + viewBoxValues[2]))
-                        svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2] + distance * 3} ${viewBoxValues[3]}`);
-                    }
-                    if (topLeft.y > viewBoxValues[1] + viewBoxValues[3] - 100) {
-                        let distance = Math.abs(topLeft.y - (viewBoxValues[1] + viewBoxValues[3]))
-                        svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2]} ${viewBoxValues[3] + distance * 2}`);
-                    }
-
-                });
-            }
-
-            setInterval(updateBirdViewOnTick, 1);
-    });
-    </script>
+        {% include 'bird_view/bird_view_expand.html' %}
 </div>
 <script>
                         document.getElementById("data-source-plugin").addEventListener("change", function () {
