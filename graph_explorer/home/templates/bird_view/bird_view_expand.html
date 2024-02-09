@@ -1,0 +1,61 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+ $(document).ready(function() {
+    // Function to update the bird-view div with the contents of the center div
+    const centerG = $('#center-graph-g')
+    const birdViewG =  $('#bird-graph-g')
+
+
+
+     function updateBirdView() {
+            var centerContents = centerG.contents().clone();
+            birdViewG.empty().append(centerContents);
+    }
+
+    // Initial update
+    updateBirdView();
+
+    // Listen for common events in the document and update the bird-view accordingly
+    function updateBirdViewOnTick() {
+            updateBirdView();
+
+            const svg = document.getElementById('bird-graph-svg');
+            const nodes = svg.querySelectorAll('.node');
+
+            const viewBoxValues = svg.getAttribute('viewBox').split(' ').map(Number);
+            nodes.forEach(node => {
+
+                const transformAttr = node.getAttribute('transform');
+                const [translateX, translateY] = transformAttr.match(/translate\(([^,]+),([^)]+)\)/).slice(1).map(Number);
+
+                const gElement = document.getElementById('bird-graph-g');
+
+                const transformAttrG = gElement.getAttribute('transform');
+                const [nodeTranslateX, nodeTranslateY] = transformAttrG.match(/translate\(([^,]+),([^)]+)\)/).slice(1).map(Number);
+                const scale = parseFloat(transformAttrG.match(/scale\((.*?)\)/)[1]);
+
+                const topLeft = { x: (nodeTranslateX + translateX) * scale, y: (nodeTranslateY + translateY) * scale };
+
+                if (topLeft.x < viewBoxValues[0]) {
+                    let distance = Math.abs(topLeft.x - viewBoxValues[0])
+                    svg.setAttribute('viewBox', `${viewBoxValues[0] - distance} ${viewBoxValues[1]} ${viewBoxValues[2] + distance} ${viewBoxValues[3]}`);
+                }
+                if (topLeft.y < viewBoxValues[1]) {
+                    let distance = Math.abs(topLeft.y - viewBoxValues[0])
+                    svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1] - distance} ${viewBoxValues[2]} ${viewBoxValues[3] + distance}`);
+                }
+                if (topLeft.x > viewBoxValues[0] + viewBoxValues[2] - 200) {
+                    let distance = Math.abs(topLeft.x - (viewBoxValues[0] + viewBoxValues[2]))
+                    svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2] + distance * 3} ${viewBoxValues[3]}`);
+                }
+                if (topLeft.y > viewBoxValues[1] + viewBoxValues[3] - 100) {
+                    let distance = Math.abs(topLeft.y - (viewBoxValues[1] + viewBoxValues[3]))
+                    svg.setAttribute('viewBox', `${viewBoxValues[0]} ${viewBoxValues[1]} ${viewBoxValues[2]} ${viewBoxValues[3] + distance * 2}`);
+                }
+
+            });
+        }
+
+        setInterval(updateBirdViewOnTick, 1);
+});
+</script>
