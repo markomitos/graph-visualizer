@@ -98,7 +98,7 @@
         gap: 10px;
     }
 
-    .choose-file {
+    .change-file-path {
         display: flex;
         flex-direction: row;
         gap: 10px;
@@ -138,77 +138,12 @@
           <div class="right-header">
 
             <div class="top-right">
-                <div class="choose-file">
+
+                <div class="change-file-path">
                     <label for="absolute-path">File path: </label><input id="absolute-path">
                 </div>
+                {% include 'change_file_path.html' %}
 
-                <script>
-                    function isFileXML(filePath) {
-                        const xmlRegex = /\.xml$/i; // The "i" flag makes the regex case-insensitive
-                        return xmlRegex.test(filePath);
-                    }
-
-                    function isFileRDF(filePath) {
-                        const xmlRegex = /\.nt$/i;
-                        return xmlRegex.test(filePath);
-                    }
-
-                    function change_filepath(file_type, file_path) {
-                         var xhr = new XMLHttpRequest();
-                         xhr.open("PUT", "/change_file_path/", true);
-                         xhr.setRequestHeader("Content-Type", "application/json");
-                         xhr.onreadystatechange = function () {
-                             if (xhr.readyState === XMLHttpRequest.DONE) {
-                                 if (xhr.status === 200) {
-                                     var response = JSON.parse(xhr.responseText);
-                                        if (response.is_data_source_changed) {
-                                            location.reload();
-                                        } else {
-                                            alert("File doesn't exist!")
-                                        }
-
-                                 } else {
-                                                        // Handle error
-                                     console.error('Request failed with status:', xhr.status);
-                                 }
-                             }
-                         };
-                        var data = JSON.stringify({
-                            file_type: file_type,
-                            file_path: file_path
-                        });
-                        xhr.send(data);
-                    }
-
-                    // Get a reference to the input element
-                    const inputElement = document.getElementById('absolute-path');
-
-                    // Add event listener to listen for Enter key press
-                    inputElement.addEventListener('keypress', function (event) {
-                        // Check if the pressed key is Enter
-                        if (event.key === 'Enter') {
-                            // Get the text inside the input field
-                            const file_path = inputElement.value;
-                            const data_source_plugin = document.getElementById("data-source-plugin").value
-                            if (isFileXML(file_path)) {
-                                if (data_source_plugin === "XML Data Source") {
-                                    change_filepath("XML Data Source", file_path)
-                                } else alert("Choose XML Data Source first before changing the file path")
-
-                            }
-                            else if (isFileRDF(file_path)) {
-                                if (data_source_plugin === "RDF Data Source") {
-                                    change_filepath("RDF Data Source", file_path)
-                                } else alert("Choose RDF Data Source first before changing the file path")
-                            }
-                            else {
-                                alert("File must be an XML or RDF!")
-                            }
-                        }
-                    });
-
-
-                </script>
                 <div class="plugins">
                     <label for="data-source-plugin">Data source plugin</label>
                     <select class="plugin-select" id="data-source-plugin">
