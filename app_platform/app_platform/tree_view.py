@@ -68,13 +68,13 @@ def generate_tree_view(dataGraph: Graph):
     # Add the JavaScript function
     tree_view_section += """
     <script>
-        function updateFocusColor(vertexId){
+        function updateTreeFocusColor(vertexId){
             const liElements = document.querySelectorAll('.vertex-info');
             liElements.forEach(element => {
                 let span = element.querySelectorAll('span')[0];
                 if(span.textContent === vertexId){
                     span.style.color = 'red';
-                    loadVertexInfo(span)
+                    loadVertexInfo(span);
                 } else {
                     span.style.color = '#356fdb';
                 }
@@ -87,14 +87,15 @@ def generate_tree_view(dataGraph: Graph):
         // Add click event listener to each main li element
         liElements.forEach(element => {
             element.addEventListener('click', function() {
+                let spanForChange = element.querySelectorAll('span')[0];
+                updateMainViewFocusColor(spanForChange.textContent);
+            
                 liElements.forEach(n => {
                     let span = n.querySelectorAll('span')[0];
                     span.style.color = '#356fdb';
-                    
                 });
     
-                let span = this.querySelectorAll('span')[0];
-                span.style.color = 'red';
+                spanForChange.style.color = 'red';
             });
         });
     

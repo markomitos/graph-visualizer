@@ -81,7 +81,7 @@ class BlockVisualiser(VisualizerBase):
                             node.append("text").
                                 attr("y", "25").
                                 attr("x", "5").
-                                text(d => "# "+d.id);    
+                                text(d => d.id);    
                             // Append text to nodes
                             node.append("text")
                                 .attr("y", "50")
